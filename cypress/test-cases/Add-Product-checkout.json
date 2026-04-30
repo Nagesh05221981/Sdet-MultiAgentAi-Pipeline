@@ -1,0 +1,66 @@
+{
+  "feature": "Add Product to Cart and Checkout",
+  "story": "As a product owner I would like the user to be able to select one product, add it to the cart and checkout",
+  "cases": [
+    {
+      "id": "TC-001",
+      "title": "Add a product to the cart and verify",
+      "priority": "high",
+      "steps": [
+        "Open the NOVA Store homepage",
+        "Locate the first product in the product catalogue",
+        "Click the Add button on the first product",
+        "Verify the cart badge displays 1",
+        "Open the cart drawer",
+        "Verify the product name in the cart matches the selected product",
+        "Verify the product price in the cart matches the selected product price"
+      ],
+      "assertions": [
+        "Cart badge should display 1",
+        "Product name in cart should match the selected product",
+        "Product price in cart should match the selected product price"
+      ],
+      "testData": null
+    },
+    {
+      "id": "TC-002",
+      "title": "Complete checkout with Standard Shipping",
+      "priority": "high",
+      "steps": [
+        "Open the NOVA Store homepage",
+        "Locate the first product in the product catalogue",
+        "Click the Add button on the first product",
+        "Open the cart drawer",
+        "Click the Proceed to Checkout button",
+        "Verify the checkout page is displayed",
+        "Click the Choose Delivery button",
+        "Verify the delivery options are displayed",
+        "Select the Standard Shipping option",
+        "Verify the Standard Shipping option is highlighted",
+        "Click the Continue to Payment button",
+        "Verify the payment details section is displayed",
+        "Enter the valid card number in the card number field",
+        "Enter the cardholder's name in the card name field",
+        "Enter the card expiry date in the expiry field",
+        "Enter the card CVV in the CVV field",
+        "Click the Review Order button",
+        "Verify the order review section is displayed",
+        "Click the Place Order button",
+        "Verify the Order Confirmed! message is displayed",
+        "Verify the Continue Shopping button is displayed"
+      ],
+      "assertions": [
+        "Checkout page should be displayed",
+        "Delivery options should be displayed",
+        "Standard Shipping option should be highlighted",
+        "Payment details section should be displayed",
+        "Order review section should be displayed",
+        "Order Confirmed! message should be displayed",
+        "Continue Shopping button should be displayed"
+      ],
+      "testData": {
+        "stateSeeding": "cartWithOneItem"
+      }
+    }
+  ]
+}

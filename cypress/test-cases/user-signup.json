@@ -1,0 +1,94 @@
+{
+  "feature": "User Signup",
+  "story": "As a new visitor, I want to create an account so that I can have a personalized shopping experience.",
+  "cases": [
+    {
+      "id": "TC-001",
+      "title": "Successful User Signup",
+      "priority": "high",
+      "steps": [
+        "Click the Sign Up button in the navigation bar",
+        "Enter the new user's name in the Full Name field",
+        "Enter the new user's email in the Email field",
+        "Enter the new user's password in the Password field",
+        "Click the Create Account button"
+      ],
+      "assertions": [
+        "The success message '✓ Account created! Signing you in…' should be displayed",
+        "The user chip should display the new user's first name",
+        "The Login/Sign Up buttons should not be visible"
+      ],
+      "testData": null
+    },
+    {
+      "id": "TC-002",
+      "title": "Signup with Empty Fields",
+      "priority": "medium",
+      "steps": [
+        "Click the Sign Up button in the navigation bar",
+        "Leave the Full Name field empty",
+        "Enter the new user's email in the Email field",
+        "Enter the new user's password in the Password field",
+        "Click the Create Account button"
+      ],
+      "assertions": [
+        "The error message 'Please fill in all fields.' should be displayed"
+      ],
+      "testData": null
+    },
+    {
+      "id": "TC-003",
+      "title": "Signup with Invalid Email",
+      "priority": "medium",
+      "steps": [
+        "Click the Sign Up button in the navigation bar",
+        "Enter the invalid email user's name in the Full Name field",
+        "Enter the invalid email user's email in the Email field",
+        "Enter the invalid email user's password in the Password field",
+        "Click the Create Account button"
+      ],
+      "assertions": [
+        "The error message 'Invalid email address.' should be displayed"
+      ],
+      "testData": {
+        "users": "invalidEmail"
+      }
+    },
+    {
+      "id": "TC-004",
+      "title": "Signup with Short Password",
+      "priority": "medium",
+      "steps": [
+        "Click the Sign Up button in the navigation bar",
+        "Enter the short password user's name in the Full Name field",
+        "Enter the short password user's email in the Email field",
+        "Enter the short password user's password in the Password field",
+        "Click the Create Account button"
+      ],
+      "assertions": [
+        "The error message 'Password must be at least 6 characters.' should be displayed"
+      ],
+      "testData": {
+        "users": "shortPassword"
+      }
+    },
+    {
+      "id": "TC-005",
+      "title": "Signup with Duplicate Account",
+      "priority": "medium",
+      "steps": [
+        "Click the Sign Up button in the navigation bar",
+        "Enter the existing user's name in the Full Name field",
+        "Enter the existing user's email in the Email field",
+        "Enter the existing user's password in the Password field",
+        "Click the Create Account button"
+      ],
+      "assertions": [
+        "The error message 'Account already exists. Try logging in.' should be displayed"
+      ],
+      "testData": {
+        "stateSeeding": "existingUserForDuplicate"
+      }
+    }
+  ]
+}

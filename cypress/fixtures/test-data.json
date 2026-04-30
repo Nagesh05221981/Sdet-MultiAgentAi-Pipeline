@@ -1,0 +1,58 @@
+{
+  "products": {
+    "productToAdd": {
+      "index": 0,
+      "name": "Wireless Noise-Cancelling Headphones",
+      "price": "$149.99",
+      "category": "Tech"
+    },
+    "ledLamp": {
+      "index": 1,
+      "name": "Smart LED Desk Lamp",
+      "price": "$79.99",
+      "category": "Tech"
+    }
+  },
+  "users": {
+    "newUser": {
+      "name": "Jane Doe",
+      "email": "jane.doe@example.com",
+      "password": "password123"
+    },
+    "existingUser": {
+      "name": "John Smith",
+      "email": "john@test.com",
+      "password": "existing123"
+    },
+    "invalidEmail": {
+      "name": "Bad Email",
+      "email": "not-an-email",
+      "password": "password123"
+    },
+    "shortPassword": {
+      "name": "Short Pass",
+      "email": "short@example.com",
+      "password": "123"
+    }
+  },
+  "payment": {
+    "validCard": {
+      "number": "1234 5678 9012 3456",
+      "name": "Jane Doe",
+      "expiry": "12/28",
+      "cvv": "123"
+    }
+  },
+  "storeLocations": {
+    "novaPaloAlto": "Nova Palo Alto"
+  },
+  "pickupDetails": {
+    "desiredDay": "Fri",
+    "desiredTime": "10:00 AM"
+  },
+  "search": {
+    "validTerm": "headphones",
+    "noResultsTerm": "xyznonexistent",
+    "categoryFilter": "Tech"
+  }
+}

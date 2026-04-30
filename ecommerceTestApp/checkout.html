@@ -1,0 +1,970 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NOVA — Checkout</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Instrument+Serif:ital@0;1&family=Outfit:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0E0E0F;
+  --surface: #161618;
+  --card: #1C1C1F;
+  --border: rgba(255,255,255,0.07);
+  --text: #F0EEE9;
+  --muted: #888580;
+  --accent: #E8C547;
+  --accent2: #E05B3A;
+  --green: #4CAF82;
+  --radius: 14px;
+}
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+body { font-family: 'Outfit', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+/* ─── NAV ─────────────────────────── */
+nav {
+  position: sticky; top: 0; z-index: 50;
+  background: rgba(14,14,15,0.85);
+  backdrop-filter: blur(18px);
+  border-bottom: 1px solid var(--border);
+  padding: 0 48px; height: 68px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.nav-logo {
+  font-family: 'Syne', sans-serif; font-weight: 800; font-size: 22px;
+  letter-spacing: 4px; color: var(--text); text-decoration: none;
+}
+.nav-logo span { color: var(--accent); }
+.nav-links { display: flex; align-items: center; gap: 6px; }
+.nav-link {
+  padding: 7px 16px; border-radius: 50px; border: none;
+  font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 500;
+  cursor: pointer; transition: all .2s; letter-spacing: .3px;
+  background: none; color: var(--muted); text-decoration: none;
+}
+.nav-link:hover { color: var(--text); }
+.nav-link.active { color: var(--accent); }
+
+/* ─── LAYOUT ─────────────────────────── */
+.checkout-wrap {
+  max-width: 1100px; margin: 0 auto;
+  padding: 48px 48px 80px;
+  display: grid; grid-template-columns: 1.4fr 1fr; gap: 48px;
+  min-height: calc(100vh - 68px - 80px);
+}
+
+/* ─── STEPPER ─────────────────────────── */
+.stepper {
+  display: flex; align-items: center; gap: 0;
+  margin-bottom: 40px; grid-column: 1 / -1;
+}
+.step {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 13px; letter-spacing: 1px; text-transform: uppercase;
+  color: var(--muted); font-weight: 500; transition: color .3s;
+}
+.step.active { color: var(--accent); }
+.step.done { color: var(--green); }
+.step-num {
+  width: 32px; height: 32px; border-radius: 50%;
+  border: 2px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Syne', sans-serif; font-weight: 700; font-size: 13px;
+  transition: all .3s;
+}
+.step.active .step-num { border-color: var(--accent); color: var(--accent); background: rgba(232,197,71,.1); }
+.step.done .step-num { border-color: var(--green); color: var(--bg); background: var(--green); }
+.step-line {
+  flex: 1; height: 1px; background: var(--border); margin: 0 16px;
+}
+.step-line.done { background: var(--green); }
+
+/* ─── SECTIONS ─────────────────────────── */
+.checkout-section { display: none; }
+.checkout-section.active { display: block; }
+
+.section-title {
+  font-family: 'Instrument Serif', serif;
+  font-size: 32px; font-weight: 400; margin-bottom: 8px;
+}
+.section-sub { color: var(--muted); font-size: 14px; margin-bottom: 32px; }
+
+/* ─── CART REVIEW ─────────────────────────── */
+.cart-item {
+  display: flex; gap: 16px; padding: 18px 0;
+  border-bottom: 1px solid var(--border);
+  align-items: center;
+}
+.cart-item-emoji {
+  width: 60px; height: 60px; border-radius: 12px;
+  background: var(--card); border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 28px; flex-shrink: 0;
+}
+.cart-item-info { flex: 1; }
+.cart-item-name { font-size: 15px; font-weight: 500; margin-bottom: 2px; }
+.cart-item-meta { font-size: 12px; color: var(--muted); }
+.cart-item-price { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 700; }
+.cart-item-qty {
+  display: flex; align-items: center; gap: 10px; margin-top: 6px;
+}
+.qbtn {
+  width: 26px; height: 26px; border-radius: 50%; border: 1px solid var(--border);
+  background: none; color: var(--text); font-size: 15px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; transition: all .2s;
+}
+.qbtn:hover { background: var(--accent); border-color: var(--accent); color: var(--bg); }
+.qval { font-size: 14px; font-weight: 600; min-width: 20px; text-align: center; }
+.remove-btn {
+  background: none; border: none; color: var(--muted); font-size: 11px;
+  cursor: pointer; text-decoration: underline; transition: color .2s;
+  margin-left: 12px;
+}
+.remove-btn:hover { color: var(--accent2); }
+
+.empty-cart-msg {
+  text-align: center; padding: 60px 0; color: var(--muted);
+}
+.empty-cart-msg .big { font-size: 48px; margin-bottom: 16px; }
+.empty-cart-msg a { color: var(--accent); }
+
+/* ─── DELIVERY OPTIONS ─────────────────────────── */
+.option-cards { display: flex; flex-direction: column; gap: 14px; }
+.option-card {
+  background: var(--card); border: 2px solid var(--border);
+  border-radius: var(--radius); padding: 24px 28px;
+  cursor: pointer; transition: all .25s;
+  display: flex; align-items: center; gap: 20px;
+}
+.option-card:hover { border-color: rgba(255,255,255,.15); }
+.option-card.selected { border-color: var(--accent); background: rgba(232,197,71,.04); }
+.option-radio {
+  width: 22px; height: 22px; border-radius: 50%;
+  border: 2px solid var(--border); flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  transition: all .2s;
+}
+.option-card.selected .option-radio {
+  border-color: var(--accent);
+}
+.option-card.selected .option-radio::after {
+  content: ''; width: 10px; height: 10px; border-radius: 50%;
+  background: var(--accent);
+}
+.option-icon { font-size: 28px; }
+.option-details { flex: 1; }
+.option-name { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700; margin-bottom: 3px; }
+.option-desc { font-size: 13px; color: var(--muted); line-height: 1.5; }
+.option-price {
+  font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700; color: var(--accent);
+}
+
+/* ─── STORE LOCATIONS ─────────────────────────── */
+.location-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 32px; }
+.location-card {
+  background: var(--card); border: 2px solid var(--border);
+  border-radius: var(--radius); padding: 22px 24px;
+  cursor: pointer; transition: all .25s;
+}
+.location-card:hover { border-color: rgba(255,255,255,.15); }
+.location-card.selected { border-color: var(--accent); background: rgba(232,197,71,.04); }
+.loc-name {
+  font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700;
+  margin-bottom: 6px; display: flex; align-items: center; gap: 8px;
+}
+.loc-name .pin { font-size: 18px; }
+.loc-addr { font-size: 12px; color: var(--muted); line-height: 1.5; margin-bottom: 8px; }
+.loc-hours { font-size: 11px; color: var(--green); font-weight: 500; letter-spacing: .5px; }
+.loc-check {
+  display: none; width: 20px; height: 20px; border-radius: 50%;
+  background: var(--accent); color: var(--bg);
+  font-size: 12px; font-weight: 700;
+  align-items: center; justify-content: center; float: right;
+}
+.location-card.selected .loc-check { display: flex; }
+
+/* ─── SCHEDULE PICKER ─────────────────────────── */
+.schedule-section { margin-top: 8px; }
+.schedule-title {
+  font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700;
+  margin-bottom: 16px; display: flex; align-items: center; gap: 8px;
+}
+.schedule-title .icon { font-size: 18px; }
+
+.date-picker-row { display: flex; gap: 10px; margin-bottom: 20px; overflow-x: auto; padding-bottom: 4px; }
+.date-chip {
+  padding: 12px 16px; border-radius: 10px;
+  border: 1px solid var(--border); background: var(--card);
+  font-family: 'Outfit', sans-serif; font-size: 13px;
+  color: var(--muted); cursor: pointer; transition: all .2s;
+  text-align: center; min-width: 80px; flex-shrink: 0;
+}
+.date-chip:hover { color: var(--text); border-color: rgba(255,255,255,.2); }
+.date-chip.selected { background: var(--accent); border-color: var(--accent); color: var(--bg); font-weight: 600; }
+.date-chip .day-name { font-size: 10px; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 4px; display: block; }
+.date-chip .day-num { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 700; display: block; line-height: 1; }
+.date-chip .day-month { font-size: 10px; margin-top: 2px; display: block; }
+
+.time-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.time-chip {
+  padding: 10px 8px; border-radius: 8px;
+  border: 1px solid var(--border); background: var(--card);
+  font-family: 'Outfit', sans-serif; font-size: 13px;
+  color: var(--muted); cursor: pointer; transition: all .2s;
+  text-align: center;
+}
+.time-chip:hover { color: var(--text); border-color: rgba(255,255,255,.2); }
+.time-chip.selected { background: var(--accent); border-color: var(--accent); color: var(--bg); font-weight: 600; }
+
+/* ─── PAYMENT ─────────────────────────── */
+.card-form {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 32px;
+}
+.card-visual {
+  background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
+  border-radius: 14px; padding: 28px 24px; margin-bottom: 32px;
+  min-height: 180px; display: flex; flex-direction: column;
+  justify-content: space-between; position: relative; overflow: hidden;
+}
+.card-visual::after {
+  content: ''; position: absolute; top: -30px; right: -30px;
+  width: 140px; height: 140px; border-radius: 50%;
+  background: rgba(232,197,71,.15);
+}
+.card-visual::before {
+  content: ''; position: absolute; bottom: -40px; right: 30px;
+  width: 100px; height: 100px; border-radius: 50%;
+  background: rgba(232,197,71,.08);
+}
+.card-chip { font-size: 28px; }
+.card-number-display {
+  font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 600;
+  letter-spacing: 3px; margin: 16px 0;
+}
+.card-bottom { display: flex; justify-content: space-between; align-items: flex-end; }
+.card-holder-display { font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,.7); }
+.card-holder-display .val { font-size: 13px; color: var(--text); display: block; margin-top: 3px; }
+.card-exp-display { font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,.7); text-align: right; }
+.card-exp-display .val { font-size: 13px; color: var(--text); display: block; margin-top: 3px; }
+
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.form-grid .full { grid-column: 1 / -1; }
+.field { margin-bottom: 0; }
+.field label {
+  display: block; font-size: 11px; letter-spacing: 2px;
+  text-transform: uppercase; color: var(--muted); font-weight: 500; margin-bottom: 7px;
+}
+.field input, .field select {
+  width: 100%; padding: 12px 16px;
+  background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
+  color: var(--text); font-family: 'Outfit', sans-serif; font-size: 14px; outline: none;
+  transition: border .2s;
+}
+.field input:focus, .field select:focus { border-color: var(--accent); }
+.field input::placeholder { color: var(--muted); }
+.field select { cursor: pointer; }
+.field select option { background: var(--surface); color: var(--text); }
+
+/* ─── ORDER SUMMARY SIDEBAR ─────────────────────────── */
+.order-summary {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 32px;
+  position: sticky; top: 100px;
+  height: fit-content;
+}
+.summary-title {
+  font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 700;
+  margin-bottom: 24px; display: flex; align-items: center; gap: 8px;
+}
+.summary-items { margin-bottom: 24px; }
+.si {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 10px 0; font-size: 13px;
+  border-bottom: 1px solid rgba(255,255,255,.04);
+}
+.si-name { color: var(--muted); flex: 1; }
+.si-qty { color: var(--muted); margin: 0 12px; font-size: 12px; }
+.si-price { font-weight: 600; }
+.summary-divider { height: 1px; background: var(--border); margin: 4px 0 16px; }
+
+.summary-row {
+  display: flex; justify-content: space-between; font-size: 13px;
+  margin-bottom: 10px; color: var(--muted);
+}
+.summary-row .val { color: var(--text); font-weight: 500; }
+.summary-total {
+  display: flex; justify-content: space-between; align-items: center;
+  padding-top: 16px; border-top: 1px solid var(--border); margin-top: 8px;
+}
+.summary-total .label {
+  font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted);
+}
+.summary-total .amount {
+  font-family: 'Syne', sans-serif; font-size: 28px; font-weight: 700; color: var(--accent);
+}
+
+.pickup-summary {
+  margin-top: 20px; padding: 16px;
+  background: rgba(76,175,130,.06); border: 1px solid rgba(76,175,130,.15);
+  border-radius: 10px; display: none;
+}
+.pickup-summary .ps-title {
+  font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--green); font-weight: 600; margin-bottom: 8px;
+}
+.pickup-summary .ps-detail { font-size: 13px; color: var(--muted); line-height: 1.7; }
+.pickup-summary .ps-detail strong { color: var(--text); font-weight: 500; }
+
+/* ─── BUTTONS ─────────────────────────── */
+.btn {
+  padding: 8px 20px; border-radius: 50px; border: none;
+  font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 500;
+  cursor: pointer; transition: all .2s; letter-spacing: .5px;
+}
+.btn-ghost {
+  background: none; color: var(--muted);
+  border: 1px solid var(--border);
+}
+.btn-ghost:hover { color: var(--text); border-color: rgba(255,255,255,.2); }
+.btn-accent { background: var(--accent); color: var(--bg); font-weight: 700; }
+.btn-accent:hover { background: #f0d060; }
+
+.action-row {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-top: 36px; padding-top: 24px; border-top: 1px solid var(--border);
+}
+.next-btn {
+  padding: 14px 36px; border-radius: 10px; border: none;
+  background: var(--accent); color: var(--bg);
+  font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700;
+  letter-spacing: 2px; text-transform: uppercase;
+  cursor: pointer; transition: all .2s;
+}
+.next-btn:hover { background: #f0d060; transform: translateY(-1px); }
+.next-btn:disabled { background: #333; color: var(--muted); cursor: not-allowed; transform: none; }
+.back-btn {
+  padding: 14px 28px; border-radius: 10px;
+  border: 1px solid var(--border); background: none;
+  font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 500;
+  color: var(--muted); cursor: pointer; transition: all .2s;
+}
+.back-btn:hover { color: var(--text); border-color: rgba(255,255,255,.2); }
+
+/* ─── FOOTER ─────────────────────────── */
+footer {
+  border-top: 1px solid var(--border);
+  padding: 32px 48px;
+  display: flex; align-items: center; justify-content: space-between;
+  color: var(--muted); font-size: 13px;
+}
+.foot-logo { font-family: 'Syne', sans-serif; font-weight: 800; letter-spacing: 3px; font-size: 16px; color: var(--text); }
+.foot-logo span { color: var(--accent); }
+
+@media (max-width: 900px) {
+  nav { padding: 0 20px; }
+  .checkout-wrap { grid-template-columns: 1fr; padding: 24px 20px 60px; gap: 28px; }
+  .location-grid { grid-template-columns: 1fr; }
+  .time-grid { grid-template-columns: repeat(3, 1fr); }
+  .form-grid { grid-template-columns: 1fr; }
+  .form-grid .full { grid-column: 1; }
+  footer { flex-direction: column; gap: 12px; text-align: center; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="index.html">NO<span>V</span>A</a>
+  <div class="nav-links">
+    <a class="nav-link" href="index.html">Shop</a>
+    <a class="nav-link active" href="checkout.html">Checkout</a>
+  </div>
+</nav>
+
+<div class="checkout-wrap">
+
+  <!-- STEPPER -->
+  <div class="stepper">
+    <div class="step active" id="step-1">
+      <div class="step-num">1</div> Cart
+    </div>
+    <div class="step-line" id="line-1"></div>
+    <div class="step" id="step-2">
+      <div class="step-num">2</div> Delivery
+    </div>
+    <div class="step-line" id="line-2"></div>
+    <div class="step" id="step-3">
+      <div class="step-num">3</div> Payment
+    </div>
+    <div class="step-line" id="line-3"></div>
+    <div class="step" id="step-4">
+      <div class="step-num">4</div> Review
+    </div>
+  </div>
+
+  <!-- LEFT COLUMN: steps -->
+  <div class="checkout-main" id="checkout-main">
+
+    <!-- STEP 1: Cart Review -->
+    <div class="checkout-section active" id="sec-1">
+      <h2 class="section-title">Review Your Cart</h2>
+      <p class="section-sub">Make sure everything looks right before proceeding.</p>
+      <div id="cart-items-list"></div>
+      <div class="action-row">
+        <a href="index.html" class="back-btn">&#x2190; Continue Shopping</a>
+        <button class="next-btn" id="btn-to-2" onclick="goStep(2)">Choose Delivery &#x2192;</button>
+      </div>
+    </div>
+
+    <!-- STEP 2: Delivery Method + Pickup -->
+    <div class="checkout-section" id="sec-2">
+      <h2 class="section-title">Choose Delivery</h2>
+      <p class="section-sub">Select how you'd like to receive your order.</p>
+
+      <div class="option-cards">
+        <div class="option-card" id="opt-shipping" onclick="selectDelivery('shipping')">
+          <div class="option-radio"></div>
+          <div class="option-icon">&#x1F4E6;</div>
+          <div class="option-details">
+            <div class="option-name">Standard Shipping</div>
+            <div class="option-desc">Delivered to your address in 3–5 business days.</div>
+          </div>
+          <div class="option-price">$5.99</div>
+        </div>
+        <div class="option-card" id="opt-pickup" onclick="selectDelivery('pickup')">
+          <div class="option-radio"></div>
+          <div class="option-icon">&#x1F3EA;</div>
+          <div class="option-details">
+            <div class="option-name">Store Pickup</div>
+            <div class="option-desc">Pick up at a Nova store near you. Schedule a time that works.</div>
+          </div>
+          <div class="option-price">Free</div>
+        </div>
+      </div>
+
+      <!-- Pickup Details (shown when pickup is selected) -->
+      <div id="pickup-details" style="display:none; margin-top: 36px;">
+
+        <div class="schedule-title"><span class="icon">&#x1F4CD;</span> Select a Store Location</div>
+        <div class="location-grid" id="location-grid"></div>
+
+        <div class="schedule-section" id="schedule-section" style="display:none;">
+          <div class="schedule-title"><span class="icon">&#x1F4C5;</span> Choose Pickup Date</div>
+          <div class="date-picker-row" id="date-picker"></div>
+
+          <div id="time-section" style="display:none;">
+            <div class="schedule-title" style="margin-top:24px;"><span class="icon">&#x1F552;</span> Choose Pickup Time</div>
+            <div class="time-grid" id="time-grid"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="action-row">
+        <button class="back-btn" onclick="goStep(1)">&#x2190; Back to Cart</button>
+        <button class="next-btn" id="btn-to-3" onclick="goStep(3)" disabled>Continue to Payment &#x2192;</button>
+      </div>
+    </div>
+
+    <!-- STEP 3: Payment -->
+    <div class="checkout-section" id="sec-3">
+      <h2 class="section-title">Payment Details</h2>
+      <p class="section-sub">Enter your credit card information to complete the purchase.</p>
+
+      <div class="card-form">
+        <!-- Card Preview -->
+        <div class="card-visual">
+          <div class="card-chip">&#x1F4B3;</div>
+          <div class="card-number-display" id="card-num-display">&#x2022;&#x2022;&#x2022;&#x2022;  &#x2022;&#x2022;&#x2022;&#x2022;  &#x2022;&#x2022;&#x2022;&#x2022;  &#x2022;&#x2022;&#x2022;&#x2022;</div>
+          <div class="card-bottom">
+            <div class="card-holder-display">
+              Card Holder
+              <span class="val" id="card-holder-display">YOUR NAME</span>
+            </div>
+            <div class="card-exp-display">
+              Expires
+              <span class="val" id="card-exp-display">MM/YY</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card Form -->
+        <div class="form-grid">
+          <div class="field full">
+            <label>Card Number</label>
+            <input type="text" id="cc-number" placeholder="1234 5678 9012 3456" maxlength="19" oninput="formatCardNumber(this); updateCardPreview();">
+          </div>
+          <div class="field full">
+            <label>Cardholder Name</label>
+            <input type="text" id="cc-name" placeholder="Jane Doe" oninput="updateCardPreview()">
+          </div>
+          <div class="field">
+            <label>Expiry Date</label>
+            <input type="text" id="cc-exp" placeholder="MM/YY" maxlength="5" oninput="formatExpiry(this); updateCardPreview();">
+          </div>
+          <div class="field">
+            <label>CVV</label>
+            <input type="text" id="cc-cvv" placeholder="123" maxlength="4">
+          </div>
+        </div>
+      </div>
+
+      <div class="action-row">
+        <button class="back-btn" onclick="goStep(2)">&#x2190; Back to Delivery</button>
+        <button class="next-btn" onclick="goStep(4)">Review Order &#x2192;</button>
+      </div>
+    </div>
+
+    <!-- STEP 4: Review & Place Order -->
+    <div class="checkout-section" id="sec-4">
+      <h2 class="section-title">Review & Place Order</h2>
+      <p class="section-sub">Please confirm everything before placing your order.</p>
+
+      <div style="display:flex; flex-direction:column; gap: 20px;">
+        <!-- Delivery Summary -->
+        <div style="background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:24px;">
+          <div style="font-family:'Syne',sans-serif; font-size:14px; font-weight:700; margin-bottom:12px; display:flex; align-items:center; gap:8px;">
+            &#x1F69A; Delivery Method
+          </div>
+          <div id="review-delivery" style="font-size:14px; color:var(--muted); line-height:1.7;"></div>
+        </div>
+
+        <!-- Payment Summary -->
+        <div style="background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:24px;">
+          <div style="font-family:'Syne',sans-serif; font-size:14px; font-weight:700; margin-bottom:12px; display:flex; align-items:center; gap:8px;">
+            &#x1F4B3; Payment
+          </div>
+          <div id="review-payment" style="font-size:14px; color:var(--muted); line-height:1.7;"></div>
+        </div>
+
+        <!-- Items Summary -->
+        <div style="background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:24px;">
+          <div style="font-family:'Syne',sans-serif; font-size:14px; font-weight:700; margin-bottom:12px; display:flex; align-items:center; gap:8px;">
+            &#x1F6D2; Items
+          </div>
+          <div id="review-items" style="font-size:14px; color:var(--muted); line-height:1.7;"></div>
+        </div>
+      </div>
+
+      <div class="action-row">
+        <button class="back-btn" onclick="goStep(3)">&#x2190; Back to Payment</button>
+        <button class="next-btn" onclick="placeOrder()" style="background:var(--green); padding: 16px 48px; font-size:14px;">Place Order &#x2714;</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT COLUMN: Order Summary -->
+  <div>
+    <div class="order-summary" id="order-summary">
+      <div class="summary-title">&#x1F6D2; Order Summary</div>
+      <div class="summary-items" id="summary-items"></div>
+      <div class="summary-divider"></div>
+      <div class="summary-row"><span>Subtotal</span><span class="val" id="sum-subtotal">$0.00</span></div>
+      <div class="summary-row"><span>Delivery</span><span class="val" id="sum-delivery">—</span></div>
+      <div class="summary-row"><span>Tax (8%)</span><span class="val" id="sum-tax">$0.00</span></div>
+      <div class="summary-total">
+        <span class="label">Total</span>
+        <span class="amount" id="sum-total">$0.00</span>
+      </div>
+      <div class="pickup-summary" id="pickup-summary">
+        <div class="ps-title">&#x1F3EA; Store Pickup</div>
+        <div class="ps-detail" id="pickup-summary-detail"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="foot-logo">NO<span>V</span>A</div>
+  <span>&copy; 2026 Nova Store. All rights reserved.</span>
+  <span>Free shipping over $75 &middot; 30-day returns</span>
+</footer>
+
+<script>
+// ── DATA ──────────────────────────────────────────────
+const PRODUCTS = JSON.parse(localStorage.getItem('nova_products') || '[]');
+let cart = JSON.parse(localStorage.getItem('nova_cart') || '{}');
+function saveCart() { localStorage.setItem('nova_cart', JSON.stringify(cart)); }
+
+// ── STORE LOCATIONS ──────────────────────────────────
+const STORES = [
+  {
+    id: 'downtown',
+    name: 'Nova Downtown',
+    address: '245 Market Street, Suite 100',
+    city: 'San Francisco, CA 94105',
+    hours: 'Mon–Sat 9 AM – 5 PM'
+  },
+  {
+    id: 'marina',
+    name: 'Nova Marina District',
+    address: '2180 Chestnut Street',
+    city: 'San Francisco, CA 94123',
+    hours: 'Mon–Sat 9 AM – 5 PM'
+  },
+  {
+    id: 'oakland',
+    name: 'Nova Oakland Hub',
+    address: '1420 Broadway, Floor 2',
+    city: 'Oakland, CA 94612',
+    hours: 'Mon–Sat 9 AM – 5 PM'
+  },
+  {
+    id: 'paloalto',
+    name: 'Nova Palo Alto',
+    address: '528 University Avenue',
+    city: 'Palo Alto, CA 94301',
+    hours: 'Mon–Sat 9 AM – 5 PM'
+  }
+];
+
+// ── STATE ──────────────────────────────────────────────
+let currentStep = 1;
+let deliveryMethod = null; // 'shipping' or 'pickup'
+let selectedStore = null;
+let selectedDate = null;
+let selectedTime = null;
+
+// ── HELPERS ──────────────────────────────────────────
+function getProduct(id) { return PRODUCTS.find(p => p.id == id); }
+
+function getSubtotal() {
+  let t = 0;
+  Object.entries(cart).forEach(([id, qty]) => {
+    const p = getProduct(id);
+    if (p) t += p.price * qty;
+  });
+  return t;
+}
+
+function getDeliveryCost() {
+  if (deliveryMethod === 'pickup') return 0;
+  if (deliveryMethod === 'shipping') return 5.99;
+  return 0;
+}
+
+// ── STEP NAVIGATION ──────────────────────────────────
+function goStep(n) {
+  // Validation
+  if (n === 2 && Object.keys(cart).length === 0) return;
+  if (n === 3) {
+    if (!deliveryMethod) return;
+    if (deliveryMethod === 'pickup' && (!selectedStore || !selectedDate || !selectedTime)) return;
+  }
+
+  currentStep = n;
+  // Update sections
+  document.querySelectorAll('.checkout-section').forEach(s => s.classList.remove('active'));
+  document.getElementById('sec-' + n).classList.add('active');
+
+  // Update stepper
+  for (let i = 1; i <= 4; i++) {
+    const step = document.getElementById('step-' + i);
+    const line = document.getElementById('line-' + i);
+    step.classList.remove('active', 'done');
+    if (i < n) step.classList.add('done');
+    else if (i === n) step.classList.add('active');
+    if (line) {
+      line.classList.remove('done');
+      if (i < n) line.classList.add('done');
+    }
+  }
+
+  // Populate review step
+  if (n === 4) populateReview();
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  renderSummary();
+}
+
+// ── CART RENDERING ───────────────────────────────────
+function renderCartItems() {
+  const container = document.getElementById('cart-items-list');
+  const entries = Object.entries(cart).filter(([,q]) => q > 0);
+
+  if (!entries.length) {
+    container.innerHTML = `<div class="empty-cart-msg"><div class="big">🛍</div><p>Your cart is empty. <a href="index.html">Go shopping</a></p></div>`;
+    document.getElementById('btn-to-2').disabled = true;
+    return;
+  }
+
+  document.getElementById('btn-to-2').disabled = false;
+  let html = '';
+  entries.forEach(([id, qty]) => {
+    const p = getProduct(id);
+    if (!p) return;
+    html += `
+    <div class="cart-item">
+      <div class="cart-item-emoji">${p.emoji}</div>
+      <div class="cart-item-info">
+        <div class="cart-item-name">${p.name}</div>
+        <div class="cart-item-meta">${p.cat}</div>
+        <div class="cart-item-qty">
+          <button class="qbtn" onclick="changeQty(${id},-1)">−</button>
+          <span class="qval">${qty}</span>
+          <button class="qbtn" onclick="changeQty(${id},1)">+</button>
+          <button class="remove-btn" onclick="removeItem(${id})">Remove</button>
+        </div>
+      </div>
+      <div class="cart-item-price">$${(p.price * qty).toFixed(2)}</div>
+    </div>`;
+  });
+  container.innerHTML = html;
+}
+
+function changeQty(id, d) {
+  cart[id] = (cart[id] || 0) + d;
+  if (cart[id] <= 0) delete cart[id];
+  saveCart();
+  renderCartItems();
+  renderSummary();
+}
+
+function removeItem(id) {
+  delete cart[id];
+  saveCart();
+  renderCartItems();
+  renderSummary();
+}
+
+// ── ORDER SUMMARY ────────────────────────────────────
+function renderSummary() {
+  const container = document.getElementById('summary-items');
+  const entries = Object.entries(cart).filter(([,q]) => q > 0);
+  let html = '';
+  entries.forEach(([id, qty]) => {
+    const p = getProduct(id);
+    if (!p) return;
+    html += `<div class="si"><span class="si-name">${p.name}</span><span class="si-qty">x${qty}</span><span class="si-price">$${(p.price*qty).toFixed(2)}</span></div>`;
+  });
+  container.innerHTML = html || '<p style="color:var(--muted);font-size:13px;">No items yet</p>';
+
+  const subtotal = getSubtotal();
+  const delivery = getDeliveryCost();
+  const tax = subtotal * 0.08;
+  const total = subtotal + delivery + tax;
+
+  document.getElementById('sum-subtotal').textContent = '$' + subtotal.toFixed(2);
+  document.getElementById('sum-delivery').textContent = deliveryMethod === 'pickup' ? 'Free' : (deliveryMethod === 'shipping' ? '$5.99' : '—');
+  document.getElementById('sum-tax').textContent = '$' + tax.toFixed(2);
+  document.getElementById('sum-total').textContent = '$' + total.toFixed(2);
+
+  // Pickup summary
+  const ps = document.getElementById('pickup-summary');
+  if (deliveryMethod === 'pickup' && selectedStore) {
+    const store = STORES.find(s => s.id === selectedStore);
+    let detail = `<strong>${store.name}</strong><br>${store.address}, ${store.city}`;
+    if (selectedDate) detail += `<br>Date: <strong>${selectedDate}</strong>`;
+    if (selectedTime) detail += `<br>Time: <strong>${selectedTime}</strong>`;
+    document.getElementById('pickup-summary-detail').innerHTML = detail;
+    ps.style.display = 'block';
+  } else {
+    ps.style.display = 'none';
+  }
+}
+
+// ── DELIVERY SELECTION ───────────────────────────────
+function selectDelivery(method) {
+  deliveryMethod = method;
+  document.getElementById('opt-shipping').classList.toggle('selected', method === 'shipping');
+  document.getElementById('opt-pickup').classList.toggle('selected', method === 'pickup');
+  document.getElementById('pickup-details').style.display = method === 'pickup' ? 'block' : 'none';
+
+  if (method === 'shipping') {
+    document.getElementById('btn-to-3').disabled = false;
+    selectedStore = null;
+    selectedDate = null;
+    selectedTime = null;
+  } else {
+    updateDeliveryButton();
+    renderLocations();
+  }
+  renderSummary();
+}
+
+function updateDeliveryButton() {
+  const ready = deliveryMethod === 'shipping' || (deliveryMethod === 'pickup' && selectedStore && selectedDate && selectedTime);
+  document.getElementById('btn-to-3').disabled = !ready;
+}
+
+// ── STORE LOCATIONS ──────────────────────────────────
+function renderLocations() {
+  const grid = document.getElementById('location-grid');
+  grid.innerHTML = STORES.map(s => `
+    <div class="location-card${selectedStore === s.id ? ' selected' : ''}" onclick="selectStore('${s.id}')">
+      <div class="loc-check">✓</div>
+      <div class="loc-name"><span class="pin">📍</span>${s.name}</div>
+      <div class="loc-addr">${s.address}<br>${s.city}</div>
+      <div class="loc-hours">⏰ ${s.hours}</div>
+    </div>
+  `).join('');
+}
+
+function selectStore(id) {
+  selectedStore = id;
+  selectedDate = null;
+  selectedTime = null;
+  renderLocations();
+  document.getElementById('schedule-section').style.display = 'block';
+  renderDatePicker();
+  document.getElementById('time-section').style.display = 'none';
+  updateDeliveryButton();
+  renderSummary();
+}
+
+// ── DATE PICKER ──────────────────────────────────────
+function renderDatePicker() {
+  const container = document.getElementById('date-picker');
+  const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  let html = '';
+
+  for (let i = 1; i <= 7; i++) {
+    const d = new Date();
+    d.setDate(d.getDate() + i);
+    // Skip Sundays (store closed)
+    if (d.getDay() === 0) continue;
+    const label = `${days[d.getDay()]}, ${months[d.getMonth()]} ${d.getDate()}`;
+    const isSelected = selectedDate === label;
+    html += `
+    <div class="date-chip${isSelected ? ' selected' : ''}" onclick="selectDate('${label}')">
+      <span class="day-name">${days[d.getDay()]}</span>
+      <span class="day-num">${d.getDate()}</span>
+      <span class="day-month">${months[d.getMonth()]}</span>
+    </div>`;
+  }
+  container.innerHTML = html;
+}
+
+function selectDate(label) {
+  selectedDate = label;
+  selectedTime = null;
+  renderDatePicker();
+  document.getElementById('time-section').style.display = 'block';
+  renderTimeGrid();
+  updateDeliveryButton();
+  renderSummary();
+}
+
+// ── TIME PICKER (9 AM – 5 PM) ───────────────────────
+function renderTimeGrid() {
+  const container = document.getElementById('time-grid');
+  const slots = [];
+  for (let h = 9; h <= 16; h++) {
+    slots.push(formatHour(h, 0));
+    slots.push(formatHour(h, 30));
+  }
+  // Add 5:00 PM as last slot
+  slots.push('5:00 PM');
+
+  container.innerHTML = slots.map(t => `
+    <div class="time-chip${selectedTime === t ? ' selected' : ''}" onclick="selectTime('${t}')">${t}</div>
+  `).join('');
+}
+
+function formatHour(h, m) {
+  const ampm = h >= 12 ? 'PM' : 'AM';
+  const h12 = h > 12 ? h - 12 : h;
+  return `${h12}:${m.toString().padStart(2, '0')} ${ampm}`;
+}
+
+function selectTime(t) {
+  selectedTime = t;
+  renderTimeGrid();
+  updateDeliveryButton();
+  renderSummary();
+}
+
+// ── CARD FORMATTING ──────────────────────────────────
+function formatCardNumber(input) {
+  let v = input.value.replace(/\D/g, '').substring(0, 16);
+  let formatted = v.match(/.{1,4}/g);
+  input.value = formatted ? formatted.join(' ') : '';
+}
+
+function formatExpiry(input) {
+  let v = input.value.replace(/\D/g, '').substring(0, 4);
+  if (v.length >= 2) v = v.substring(0, 2) + '/' + v.substring(2);
+  input.value = v;
+}
+
+function updateCardPreview() {
+  const num = document.getElementById('cc-number').value || '•••• •••• •••• ••••';
+  const name = document.getElementById('cc-name').value || 'YOUR NAME';
+  const exp = document.getElementById('cc-exp').value || 'MM/YY';
+  document.getElementById('card-num-display').textContent = num;
+  document.getElementById('card-holder-display').textContent = name.toUpperCase();
+  document.getElementById('card-exp-display').textContent = exp;
+}
+
+// ── REVIEW ───────────────────────────────────────────
+function populateReview() {
+  // Delivery
+  let delHtml = '';
+  if (deliveryMethod === 'shipping') {
+    delHtml = '<strong>Standard Shipping</strong> — 3–5 business days ($5.99)';
+  } else {
+    const store = STORES.find(s => s.id === selectedStore);
+    delHtml = `<strong>Store Pickup</strong> — Free<br>
+      📍 ${store.name}, ${store.address}, ${store.city}<br>
+      📅 ${selectedDate} at ${selectedTime}`;
+  }
+  document.getElementById('review-delivery').innerHTML = delHtml;
+
+  // Payment
+  const cardNum = document.getElementById('cc-number').value || '•••• •••• •••• ••••';
+  const masked = '•••• •••• •••• ' + cardNum.slice(-4);
+  const cardName = document.getElementById('cc-name').value || 'Not provided';
+  document.getElementById('review-payment').innerHTML = `<strong>${cardName}</strong><br>${masked}`;
+
+  // Items
+  const entries = Object.entries(cart).filter(([,q]) => q > 0);
+  let itemsHtml = '';
+  entries.forEach(([id, qty]) => {
+    const p = getProduct(id);
+    if (!p) return;
+    itemsHtml += `${p.emoji} ${p.name} x${qty} — $${(p.price * qty).toFixed(2)}<br>`;
+  });
+  document.getElementById('review-items').innerHTML = itemsHtml;
+}
+
+// ── PLACE ORDER ──────────────────────────────────────
+function placeOrder() {
+  const orderId = 'NV-' + Date.now().toString(36).toUpperCase();
+  const subtotal = getSubtotal();
+  const delivery = getDeliveryCost();
+  const tax = subtotal * 0.08;
+  const total = subtotal + delivery + tax;
+
+  const orderData = {
+    orderId,
+    items: Object.entries(cart).map(([id, qty]) => {
+      const p = getProduct(id);
+      return { name: p.name, emoji: p.emoji, qty, price: p.price, subtotal: p.price * qty };
+    }),
+    deliveryMethod,
+    store: deliveryMethod === 'pickup' ? STORES.find(s => s.id === selectedStore) : null,
+    pickupDate: selectedDate,
+    pickupTime: selectedTime,
+    payment: {
+      cardLast4: (document.getElementById('cc-number').value || '0000').slice(-4),
+      name: document.getElementById('cc-name').value || 'Customer'
+    },
+    subtotal,
+    deliveryCost: delivery,
+    tax,
+    total
+  };
+
+  localStorage.setItem('nova_last_order', JSON.stringify(orderData));
+  localStorage.setItem('nova_cart', '{}');
+  window.location.href = 'confirmation.html';
+}
+
+// ── INIT ──────────────────────────────────────────────
+renderCartItems();
+renderSummary();
+</script>
+</body>
+</html>

@@ -1,0 +1,23 @@
+// {{fileName}} — Auto-generated Page Object (functional pattern)
+
+// --- Locators ---
+{{#each locators}}
+const {{name}} = '{{{selector}}}';
+{{/each}}
+
+// --- Actions ---
+{{#each actions}}
+export function {{name}}({{joinArgs params}}) {
+{{#each steps}}
+{{renderStep this}}
+{{/each}}
+}
+
+{{/each}}
+// --- Getters ---
+{{#each getters}}
+export function {{name}}({{getterParams this}}) {
+  return {{renderGetter this}};
+}
+
+{{/each}}

@@ -1,0 +1,31 @@
+// {{fileName}} — Auto-generated Cypress Spec
+{{#each pageImports}}
+import {{alias}} from '../support/pages/{{path}}.js';
+{{/each}}
+
+describe('{{describe}}', () => {
+  let testData;
+{{#each pageImports}}
+  const {{lowerFirst alias}} = new {{alias}}();
+{{/each}}
+
+  beforeEach(() => {
+    cy.fixture('test-data').then((data) => {
+      testData = data;
+    });
+  });
+
+{{#each tests}}
+  it('{{id}}: {{title}}', () => {
+{{#if seedingCode}}
+{{{seedingCode}}}
+{{else}}
+    cy.visit('{{{../visitUrl}}}');
+{{/if}}
+{{#each steps}}
+{{renderTestStep this}}
+{{/each}}
+  });
+
+{{/each}}
+});

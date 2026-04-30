@@ -1,0 +1,76 @@
+{
+  "feature": "Add Product to Cart and Checkout",
+  "story": "As a product owner I would like the user to be able to select one product, add it to the cart and checkout",
+  "cases": [
+    {
+      "id": "TC-001",
+      "title": "Add a product to the cart and verify",
+      "priority": "high",
+      "steps": [
+        "Navigate to the homepage of NOVA Store",
+        "Locate the product named 'Smart LED Desk Lamp'",
+        "Click the Add button on the 'Smart LED Desk Lamp' product card",
+        "Open the cart drawer by clicking the cart icon",
+        "Verify that the cart drawer is visible",
+        "Check that the cart contains the 'Smart LED Desk Lamp'",
+        "Verify the quantity of the 'Smart LED Desk Lamp' is 1",
+        "Verify the price of the 'Smart LED Desk Lamp' is $79.99"
+      ],
+      "assertions": [
+        "Cart badge should display 1",
+        "Cart drawer should be visible",
+        "Cart should contain 'Smart LED Desk Lamp'",
+        "Quantity should be 1",
+        "Price should be $79.99"
+      ],
+      "testData": null
+    },
+    {
+      "id": "TC-002",
+      "title": "Checkout with Store Pickup",
+      "priority": "high",
+      "steps": [
+        "Ensure the cart contains the 'Smart LED Desk Lamp'",
+        "Click the Checkout button in the cart drawer",
+        "Verify that the checkout page is displayed",
+        "Click the Choose Delivery button to proceed to Step 2",
+        "Verify that the delivery options are visible",
+        "Select the Store Pickup option",
+        "Verify that the Store Pickup option is highlighted",
+        "Select the store location 'Nova Palo Alto'",
+        "Verify that the schedule section is visible",
+        "Select the pickup date 'Fri'",
+        "Verify that the time selection section is visible",
+        "Select the pickup time '10:00 AM'",
+        "Click the Continue to Payment button",
+        "Verify that the payment details section is visible",
+        "Enter the valid card number in the card number field",
+        "Enter the cardholder's name in the card name field",
+        "Enter the expiry date in the expiry field",
+        "Enter the CVV in the CVV field",
+        "Click the Review Order button",
+        "Verify that the review order section is visible",
+        "Click the Place Order button",
+        "Verify that the order confirmation page is displayed",
+        "Verify that the order confirmation message 'Order Confirmed!' is visible",
+        "Verify that the Continue Shopping button is visible",
+        "Click the Continue Shopping button"
+      ],
+      "assertions": [
+        "Checkout page should be displayed",
+        "Delivery options should be visible",
+        "Store Pickup option should be highlighted",
+        "Schedule section should be visible",
+        "Time selection section should be visible",
+        "Payment details section should be visible",
+        "Review order section should be visible",
+        "Order confirmation page should be displayed",
+        "Order confirmation message 'Order Confirmed!' should be visible",
+        "Continue Shopping button should be visible"
+      ],
+      "testData": {
+        "stateSeeding": "cartWithOneItem"
+      }
+    }
+  ]
+}

@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NOVA — Order Confirmed</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Instrument+Serif:ital@0;1&family=Outfit:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0E0E0F;
+  --surface: #161618;
+  --card: #1C1C1F;
+  --border: rgba(255,255,255,0.07);
+  --text: #F0EEE9;
+  --muted: #888580;
+  --accent: #E8C547;
+  --accent2: #E05B3A;
+  --green: #4CAF82;
+  --radius: 14px;
+}
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+body { font-family: 'Outfit', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+nav {
+  position: sticky; top: 0; z-index: 50;
+  background: rgba(14,14,15,0.85);
+  backdrop-filter: blur(18px);
+  border-bottom: 1px solid var(--border);
+  padding: 0 48px; height: 68px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.nav-logo {
+  font-family: 'Syne', sans-serif; font-weight: 800; font-size: 22px;
+  letter-spacing: 4px; color: var(--text); text-decoration: none;
+}
+.nav-logo span { color: var(--accent); }
+.nav-links { display: flex; align-items: center; gap: 6px; }
+.nav-link {
+  padding: 7px 16px; border-radius: 50px; border: none;
+  font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 500;
+  cursor: pointer; transition: all .2s; letter-spacing: .3px;
+  background: none; color: var(--muted); text-decoration: none;
+}
+.nav-link:hover { color: var(--text); }
+
+/* ─── CONFIRMATION ─────────────────────────── */
+.confirm-page {
+  max-width: 700px; margin: 0 auto;
+  padding: 60px 48px 100px;
+  text-align: center;
+}
+
+.success-icon {
+  width: 100px; height: 100px; border-radius: 50%;
+  background: rgba(76,175,130,.12);
+  border: 2px solid rgba(76,175,130,.3);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 48px; margin: 0 auto 28px;
+  animation: popIn .5s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes popIn {
+  from { transform: scale(0.5); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.confirm-page h1 {
+  font-family: 'Instrument Serif', serif;
+  font-size: 42px; font-weight: 400; margin-bottom: 10px;
+}
+.confirm-page .sub {
+  font-size: 16px; color: var(--muted); margin-bottom: 36px; line-height: 1.6;
+}
+
+.order-id-box {
+  display: inline-block;
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 10px; padding: 14px 32px;
+  font-family: 'Syne', sans-serif; font-size: 16px;
+  letter-spacing: 3px; color: var(--accent); font-weight: 700;
+  margin-bottom: 48px;
+}
+
+/* ─── DETAILS CARDS ─────────────────────────── */
+.detail-cards {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+  text-align: left; margin-bottom: 40px;
+}
+.dcard {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 24px;
+  animation: slideUp .4s ease both;
+}
+.dcard:nth-child(1) { animation-delay: .1s; }
+.dcard:nth-child(2) { animation-delay: .2s; }
+.dcard:nth-child(3) { animation-delay: .3s; }
+.dcard:nth-child(4) { animation-delay: .4s; }
+@keyframes slideUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+.dcard-icon { font-size: 24px; margin-bottom: 12px; }
+.dcard-title {
+  font-family: 'Syne', sans-serif; font-size: 12px; font-weight: 700;
+  letter-spacing: 2px; text-transform: uppercase; color: var(--muted);
+  margin-bottom: 10px;
+}
+.dcard-content { font-size: 14px; line-height: 1.7; color: var(--text); }
+.dcard-content .label { color: var(--muted); }
+
+/* ─── ITEMS TABLE ─────────────────────────── */
+.items-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 28px;
+  text-align: left; margin-bottom: 40px;
+  animation: slideUp .4s ease .5s both;
+}
+.items-card .title {
+  font-family: 'Syne', sans-serif; font-size: 12px; font-weight: 700;
+  letter-spacing: 2px; text-transform: uppercase; color: var(--muted);
+  margin-bottom: 16px;
+}
+.item-row {
+  display: flex; align-items: center; gap: 14px;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(255,255,255,.04);
+}
+.item-row:last-child { border-bottom: none; }
+.item-emoji { font-size: 22px; width: 36px; text-align: center; }
+.item-name { flex: 1; font-size: 14px; }
+.item-qty { font-size: 13px; color: var(--muted); margin-right: 16px; }
+.item-price { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700; }
+
+.totals-section { border-top: 1px solid var(--border); padding-top: 16px; margin-top: 8px; }
+.total-line {
+  display: flex; justify-content: space-between; padding: 6px 0;
+  font-size: 13px; color: var(--muted);
+}
+.total-line .val { color: var(--text); font-weight: 500; }
+.total-line.grand {
+  font-size: 18px; color: var(--text); padding-top: 12px; margin-top: 8px;
+  border-top: 1px solid var(--border);
+}
+.total-line.grand .val {
+  font-family: 'Syne', sans-serif; font-size: 24px; font-weight: 700; color: var(--accent);
+}
+
+/* ─── CTA ─────────────────────────── */
+.cta-row {
+  display: flex; justify-content: center; gap: 16px;
+  animation: slideUp .4s ease .6s both;
+}
+.cta-btn {
+  padding: 15px 36px; border-radius: 10px; border: none;
+  font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700;
+  letter-spacing: 2px; text-transform: uppercase;
+  cursor: pointer; transition: all .2s; text-decoration: none;
+  display: inline-block;
+}
+.cta-primary { background: var(--accent); color: var(--bg); }
+.cta-primary:hover { background: #f0d060; transform: translateY(-1px); }
+.cta-secondary {
+  background: none; color: var(--muted);
+  border: 1px solid var(--border);
+}
+.cta-secondary:hover { color: var(--text); border-color: rgba(255,255,255,.2); }
+
+footer {
+  border-top: 1px solid var(--border);
+  padding: 32px 48px;
+  display: flex; align-items: center; justify-content: space-between;
+  color: var(--muted); font-size: 13px;
+}
+.foot-logo { font-family: 'Syne', sans-serif; font-weight: 800; letter-spacing: 3px; font-size: 16px; color: var(--text); }
+.foot-logo span { color: var(--accent); }
+
+@media (max-width: 700px) {
+  nav { padding: 0 20px; }
+  .confirm-page { padding: 40px 20px 60px; }
+  .confirm-page h1 { font-size: 32px; }
+  .detail-cards { grid-template-columns: 1fr; }
+  .cta-row { flex-direction: column; }
+  footer { flex-direction: column; gap: 12px; text-align: center; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="index.html">NO<span>V</span>A</a>
+  <div class="nav-links">
+    <a class="nav-link" href="index.html">Shop</a>
+  </div>
+</nav>
+
+<div class="confirm-page">
+  <div class="success-icon">&#x2714;&#xFE0F;</div>
+  <h1>Order Confirmed!</h1>
+  <p class="sub">Thank you for shopping with Nova. Your order has been received and is being prepared.</p>
+  <div class="order-id-box" id="order-id"></div>
+
+  <div class="detail-cards" id="detail-cards"></div>
+
+  <div class="items-card">
+    <div class="title">Order Items</div>
+    <div id="items-list"></div>
+    <div class="totals-section" id="totals-section"></div>
+  </div>
+
+  <div class="cta-row">
+    <a href="index.html" class="cta-btn cta-primary">Continue Shopping</a>
+    <button class="cta-btn cta-secondary" onclick="window.print()">Print Receipt</button>
+  </div>
+</div>
+
+<footer>
+  <div class="foot-logo">NO<span>V</span>A</div>
+  <span>&copy; 2026 Nova Store. All rights reserved.</span>
+  <span>Free shipping over $75 &middot; 30-day returns</span>
+</footer>
+
+<script>
+const order = JSON.parse(localStorage.getItem('nova_last_order') || 'null');
+
+if (!order) {
+  document.querySelector('.confirm-page').innerHTML = `
+    <div class="success-icon" style="background:rgba(224,91,58,.12);border-color:rgba(224,91,58,.3);">🤔</div>
+    <h1>No Order Found</h1>
+    <p class="sub">It looks like you haven't placed an order yet.</p>
+    <a href="index.html" class="cta-btn cta-primary" style="margin-top:20px;">Go Shopping</a>
+  `;
+} else {
+  // Order ID
+  document.getElementById('order-id').textContent = order.orderId;
+
+  // Detail cards
+  const cards = document.getElementById('detail-cards');
+  let cardsHtml = '';
+
+  // Delivery card
+  if (order.deliveryMethod === 'pickup') {
+    cardsHtml += `
+    <div class="dcard">
+      <div class="dcard-icon">🏬</div>
+      <div class="dcard-title">Pickup Location</div>
+      <div class="dcard-content">
+        <strong>${order.store.name}</strong><br>
+        ${order.store.address}<br>
+        ${order.store.city}
+      </div>
+    </div>
+    <div class="dcard">
+      <div class="dcard-icon">📅</div>
+      <div class="dcard-title">Pickup Schedule</div>
+      <div class="dcard-content">
+        <span class="label">Date:</span> ${order.pickupDate}<br>
+        <span class="label">Time:</span> ${order.pickupTime}<br>
+        <span class="label">Hours:</span> 9 AM – 5 PM
+      </div>
+    </div>`;
+  } else {
+    cardsHtml += `
+    <div class="dcard">
+      <div class="dcard-icon">📦</div>
+      <div class="dcard-title">Shipping</div>
+      <div class="dcard-content">
+        Standard Shipping<br>
+        <span class="label">Estimated:</span> 3–5 business days
+      </div>
+    </div>`;
+  }
+
+  // Payment card
+  cardsHtml += `
+  <div class="dcard">
+    <div class="dcard-icon">💳</div>
+    <div class="dcard-title">Payment</div>
+    <div class="dcard-content">
+      <strong>${order.payment.name}</strong><br>
+      <span class="label">Card ending in</span> •••• ${order.payment.cardLast4}
+    </div>
+  </div>`;
+
+  // Status card
+  cardsHtml += `
+  <div class="dcard">
+    <div class="dcard-icon">📋</div>
+    <div class="dcard-title">Status</div>
+    <div class="dcard-content">
+      <span style="color:var(--green);font-weight:600;">● Confirmed</span><br>
+      <span class="label">${order.deliveryMethod === 'pickup' ? 'Ready for pickup on scheduled date' : 'Preparing for shipment'}</span>
+    </div>
+  </div>`;
+
+  cards.innerHTML = cardsHtml;
+
+  // Items
+  const itemsList = document.getElementById('items-list');
+  itemsList.innerHTML = order.items.map(i => `
+    <div class="item-row">
+      <span class="item-emoji">${i.emoji}</span>
+      <span class="item-name">${i.name}</span>
+      <span class="item-qty">x${i.qty}</span>
+      <span class="item-price">$${i.subtotal.toFixed(2)}</span>
+    </div>
+  `).join('');
+
+  // Totals
+  document.getElementById('totals-section').innerHTML = `
+    <div class="total-line"><span>Subtotal</span><span class="val">$${order.subtotal.toFixed(2)}</span></div>
+    <div class="total-line"><span>Delivery</span><span class="val">${order.deliveryCost === 0 ? 'Free' : '$' + order.deliveryCost.toFixed(2)}</span></div>
+    <div class="total-line"><span>Tax (8%)</span><span class="val">$${order.tax.toFixed(2)}</span></div>
+    <div class="total-line grand"><span>Total Paid</span><span class="val">$${order.total.toFixed(2)}</span></div>
+  `;
+}
+</script>
+</body>
+</html>

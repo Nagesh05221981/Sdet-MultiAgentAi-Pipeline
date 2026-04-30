@@ -1,0 +1,333 @@
+{
+  "app": "NOVA Store",
+  "entryPoint": "/index.html",
+
+  "pages": {
+    "home": {
+      "url": "/index.html",
+      "description": "Product catalogue with search, filters, cart drawer, auth modal",
+      "initialState": {
+        "cart": "empty ({})",
+        "activeCat": "all",
+        "currentUser": "null (logged out)",
+        "authModal": "hidden (display:none)",
+        "cartDrawer": "closed (no .open class)"
+      },
+      "selectors": {
+        "search": "#search-input",
+        "filterChips": ".fchip",
+        "productCards": ".pcard",
+        "productName": ".pcard-name",
+        "productPrice": ".pcard-price",
+        "addButton": ".add-btn",
+        "resultsInfo": "#results-info",
+        "noResults": "#no-results",
+        "cartPill": ".cart-pill",
+        "cartCount": "#cart-count",
+        "cartDrawer": ".drawer",
+        "cartDrawerItems": ".ci",
+        "cartItemName": ".ci-name",
+        "cartItemPrice": ".ci-sub",
+        "cartItemQty": ".qval",
+        "cartQtyIncrement": ".ci-qty .qbtn:last-child",
+        "cartQtyDecrement": ".ci-qty .qbtn:first-child",
+        "cartDeleteButton": ".del-btn",
+        "cartTotal": "#cart-total",
+        "cartEmptyMessage": ".drawer-empty",
+        "checkoutBtn": ".checkout-btn",
+        "loginBtn": "#auth-btns .btn-ghost",
+        "signUpBtn": "#auth-btns .btn-fill",
+        "authModal": "#auth-modal",
+        "signupNameField": "#s-name",
+        "signupEmailField": "#s-email",
+        "signupPassField": "#s-pass",
+        "signupSubmitBtn": "#form-signup .msubmit",
+        "signupMessage": "#s-msg",
+        "loginEmailField": "#l-email",
+        "loginPassField": "#l-pass",
+        "loginSubmitBtn": "#form-login .msubmit",
+        "loginMessage": "#l-msg",
+        "userChip": "#user-chip",
+        "userName": "#uname-label"
+      }
+    },
+    "checkout": {
+      "url": "/checkout.html",
+      "description": "4-step checkout wizard: Cart → Delivery → Payment → Review",
+      "prerequisite": "nova_cart must have at least 1 item in localStorage",
+      "stepper": {
+        "step1_cart": {
+          "section": "#sec-1",
+          "title": "Review Your Cart",
+          "nextButton": "#btn-to-2",
+          "nextButtonLabel": "Choose Delivery →",
+          "enabledWhen": "cart has items",
+          "disabledWhen": "cart is empty",
+          "selectors": {
+            "cartItemsList": "#cart-items-list",
+            "cartItem": ".cart-item",
+            "cartItemName": ".cart-item-name",
+            "cartItemPrice": ".cart-item-price",
+            "cartItemQty": ".qval",
+            "removeBtn": ".remove-btn"
+          }
+        },
+        "step2_delivery": {
+          "section": "#sec-2",
+          "title": "Choose Delivery",
+          "options": {
+            "shipping": {
+              "selector": "#opt-shipping",
+              "label": "Standard Shipping",
+              "price": "$5.99",
+              "selectedClass": "selected"
+            },
+            "pickup": {
+              "selector": "#opt-pickup",
+              "label": "Store Pickup",
+              "price": "Free",
+              "selectedClass": "selected",
+              "showsDetails": "#pickup-details"
+            }
+          },
+          "nextButton": "#btn-to-3",
+          "nextButtonLabel": "Continue to Payment →",
+          "enabledWhen": "a delivery option is clicked (#opt-shipping OR #opt-pickup). For pickup: also requires store + date + time selected.",
+          "disabledWhen": "no delivery option selected (default state)",
+          "backButton": "#sec-2 .back-btn",
+          "selectors": {
+            "pickupDetails": "#pickup-details",
+            "locationGrid": "#location-grid",
+            "locationCard": ".location-card",
+            "locationName": ".loc-name",
+            "scheduleSection": "#schedule-section",
+            "datePicker": "#date-picker",
+            "dateChip": ".date-chip",
+            "timeSection": "#time-section",
+            "timeGrid": "#time-grid",
+            "timeChip": ".time-chip"
+          }
+        },
+        "step3_payment": {
+          "section": "#sec-3",
+          "title": "Payment Details",
+          "fields": {
+            "cardNumber": "#cc-number",
+            "cardName": "#cc-name",
+            "expiry": "#cc-exp",
+            "cvv": "#cc-cvv"
+          },
+          "nextButton": "#sec-3 .next-btn",
+          "nextButtonLabel": "Review Order →",
+          "enabledWhen": "always enabled (no validation on fields)",
+          "backButton": "#sec-3 .back-btn"
+        },
+        "step4_review": {
+          "section": "#sec-4",
+          "title": "Review & Place Order",
+          "placeOrderButton": "#sec-4 .next-btn",
+          "placeOrderLabel": "Place Order ✔",
+          "enabledWhen": "always enabled",
+          "navigatesTo": "confirmation",
+          "backButton": "#sec-4 .back-btn",
+          "selectors": {
+            "reviewDelivery": "#review-delivery",
+            "reviewPayment": "#review-payment",
+            "reviewItems": "#review-items"
+          }
+        }
+      },
+      "orderSummary": {
+        "subtotal": "#sum-subtotal",
+        "delivery": "#sum-delivery",
+        "tax": "#sum-tax",
+        "total": "#sum-total"
+      }
+    },
+    "confirmation": {
+      "url": "/confirmation.html",
+      "description": "Order confirmation with order ID, items, totals",
+      "prerequisite": "nova_last_order must exist in localStorage",
+      "selectors": {
+        "heading": ".confirm-page h1",
+        "headingText": "Order Confirmed!",
+        "orderId": ".order-id-box",
+        "itemRows": ".item-row",
+        "itemName": ".item-name",
+        "itemPrice": ".item-price",
+        "totalPaid": ".total-line.grand .val",
+        "continueShoppingBtn": ".cta-primary",
+        "printReceiptBtn": ".cta-secondary"
+      },
+      "continueShoppingNavigatesTo": "home"
+    }
+  },
+
+  "flows": {
+    "addProductToCart": {
+      "description": "Add the first product to the cart",
+      "startPage": "home",
+      "endPage": "home",
+      "steps": [
+        { "action": "click", "target": ".pcard:first .add-btn", "description": "Click Add button on first product" },
+        { "verify": "#cart-count should contain '1'", "description": "Cart badge updates to 1" }
+      ],
+      "sideEffects": ["nova_cart updated in localStorage", ".add-btn text changes to '✓ Added'"]
+    },
+    "openCartAndProceedToCheckout": {
+      "description": "Open cart drawer and navigate to checkout page",
+      "requires": ["addProductToCart"],
+      "startPage": "home",
+      "endPage": "checkout",
+      "steps": [
+        { "action": "click", "target": ".cart-pill", "description": "Open cart drawer" },
+        { "verify": ".drawer should have class 'open'", "description": "Cart drawer is visible" },
+        { "action": "click", "target": ".checkout-btn", "description": "Click Proceed to Checkout" },
+        { "verify": "url should include 'checkout.html'", "description": "Navigated to checkout page" }
+      ]
+    },
+    "chooseStandardShipping": {
+      "description": "On checkout Step 2, select Standard Shipping",
+      "requires": ["openCartAndProceedToCheckout"],
+      "startPage": "checkout",
+      "endPage": "checkout",
+      "steps": [
+        { "action": "click", "target": "#btn-to-2", "description": "Click 'Choose Delivery' to go to Step 2" },
+        { "verify": "#sec-2 should be visible", "description": "Delivery step is shown" },
+        { "action": "click", "target": "#opt-shipping", "description": "Select Standard Shipping option" },
+        { "verify": "#opt-shipping should have class 'selected'", "description": "Shipping option is highlighted" },
+        { "verify": "#btn-to-3 should not be disabled", "description": "Continue to Payment button is now enabled" }
+      ]
+    },
+    "chooseStorePickup": {
+      "description": "On checkout Step 2, select Store Pickup and choose location, date, time",
+      "requires": ["openCartAndProceedToCheckout"],
+      "startPage": "checkout",
+      "endPage": "checkout",
+      "steps": [
+        { "action": "click", "target": "#btn-to-2", "description": "Click Choose Delivery to go to Step 2" },
+        { "verify": "#sec-2 should be visible" },
+        { "action": "click", "target": "#opt-pickup", "description": "Select Store Pickup option" },
+        { "verify": "#pickup-details should be visible" },
+        { "action": "click", "target": ".location-card containing store name", "description": "Select a store location" },
+        { "verify": "#schedule-section should be visible" },
+        { "action": "click", "target": ".date-chip containing desired day", "description": "Select pickup date" },
+        { "verify": "#time-section should be visible" },
+        { "action": "click", "target": ".time-chip containing desired time", "description": "Select pickup time" },
+        { "verify": "#btn-to-3 should not be disabled", "description": "Continue button enabled after all selections" }
+      ]
+    },
+    "fillPaymentAndReview": {
+      "description": "Enter payment details and proceed to review",
+      "requires": ["chooseStandardShipping"],
+      "startPage": "checkout",
+      "endPage": "checkout",
+      "steps": [
+        { "action": "click", "target": "#btn-to-3", "description": "Click 'Continue to Payment' to go to Step 3" },
+        { "verify": "#sec-3 should be visible", "description": "Payment step is shown" },
+        { "action": "type", "target": "#cc-number", "value": "testData.payment.validCard.number" },
+        { "action": "type", "target": "#cc-name", "value": "testData.payment.validCard.name" },
+        { "action": "type", "target": "#cc-exp", "value": "testData.payment.validCard.expiry" },
+        { "action": "type", "target": "#cc-cvv", "value": "testData.payment.validCard.cvv" },
+        { "action": "click", "target": "#sec-3 .next-btn", "description": "Click 'Review Order' to go to Step 4" },
+        { "verify": "#sec-4 should be visible", "description": "Review step is shown" }
+      ]
+    },
+    "placeOrder": {
+      "description": "Place the order from review step — navigates to confirmation page",
+      "requires": ["fillPaymentAndReview"],
+      "startPage": "checkout",
+      "endPage": "confirmation",
+      "steps": [
+        { "action": "click", "target": "#sec-4 .next-btn", "description": "Click 'Place Order'" },
+        { "verify": "url should include 'confirmation.html'", "description": "Navigated to confirmation page" }
+      ],
+      "sideEffects": ["nova_cart cleared to {}", "nova_last_order written to localStorage"]
+    },
+    "signup": {
+      "description": "Create a new account via signup modal",
+      "startPage": "home",
+      "endPage": "home",
+      "steps": [
+        { "action": "click", "target": "#auth-btns .btn-fill", "description": "Click Sign Up nav button to open auth modal" },
+        { "verify": "#auth-modal should be visible", "description": "Auth modal opens" },
+        { "action": "type", "target": "#s-name", "value": "testData.users.newUser.name" },
+        { "action": "type", "target": "#s-email", "value": "testData.users.newUser.email" },
+        { "action": "type", "target": "#s-pass", "value": "testData.users.newUser.password" },
+        { "action": "click", "target": "#form-signup .msubmit", "description": "Click Create Account" },
+        { "verify": "#s-msg should contain '✓ Account created! Signing you in…'", "description": "Success message shown" }
+      ]
+    }
+  },
+
+  "stateSeeding": {
+    "cartWithOneItem": {
+      "description": "Cart has 1x Wireless Noise-Cancelling Headphones ($149.99)",
+      "localStorage": {
+        "nova_cart": "{\"1\": 1}"
+      }
+    },
+    "cartWithTwoItems": {
+      "description": "Cart has Headphones + Desk Lamp",
+      "localStorage": {
+        "nova_cart": "{\"1\": 1, \"2\": 1}"
+      }
+    },
+    "loggedInUser": {
+      "description": "User Jane Doe is logged in",
+      "localStorage": {
+        "nova_users": "{\"jane@test.com\": {\"name\": \"Jane Doe\", \"password\": \"pass123\"}}",
+        "nova_current_user": "{\"name\": \"Jane Doe\", \"password\": \"pass123\"}"
+      }
+    },
+    "existingUserForDuplicate": {
+      "description": "An account exists for john@test.com (for testing duplicate signup)",
+      "localStorage": {
+        "nova_users": "{\"john@test.com\": {\"name\": \"John Smith\", \"password\": \"existing123\"}}"
+      }
+    }
+  },
+
+  "appMessages": {
+    "signup": {
+      "success": "✓ Account created! Signing you in…",
+      "emptyFields": "Please fill in all fields.",
+      "invalidEmail": "Invalid email address.",
+      "shortPassword": "Password must be at least 6 characters.",
+      "duplicateAccount": "Account already exists. Try logging in."
+    },
+    "login": {
+      "success": "✓ Signing you in…",
+      "emptyFields": "Please fill in all fields.",
+      "invalidCredentials": "Invalid email or password."
+    },
+    "confirmation": {
+      "heading": "Order Confirmed!",
+      "noOrder": "No Order Found"
+    }
+  },
+
+  "elementVisibility": {
+    "#auth-btns": "HIDDEN after login/signup (display:none) — use should('not.be.visible'), NEVER should('not.exist')",
+    "#auth-modal": "HIDDEN by default (display:none) — use should('be.visible') after opening",
+    ".drawer": "HIDDEN by default (no .open class) — use should('have.class', 'open') to verify open",
+    "#user-chip": "HIDDEN by default (display:none) — use should('be.visible') after login/signup",
+    "#sec-1, #sec-2, #sec-3, #sec-4": "Checkout sections — only one visible at a time (display:none for inactive)",
+    "#pickup-details": "HIDDEN by default — shown only when pickup delivery is selected"
+  },
+
+  "assertionRules": {
+    "not.exist vs not.be.visible": "In this app, elements are HIDDEN (display:none), NEVER removed from DOM. Always use should('not.be.visible'), NEVER should('not.exist') for elements that disappear.",
+    "have.class active vs selected": "Filter chips (.fchip) get class 'active' when selected. Delivery option cards (#opt-shipping, #opt-pickup) get class 'selected'. Checkout sections (#sec-1 etc) get class 'active'. NEVER use 'selected' for filter chips.",
+    "results count": "#results-info shows '<N> products' (e.g. '3 products', '18 products'). Assert with should('contain', 'products'), NOT 'matching products'.",
+    "have.length": "Use numbers not strings for have.length: should('have.length', 18) not should('have.length', '18')"
+  },
+
+  "navigationTriggers": {
+    "goToCheckout": { "from": "home", "to": "checkout", "trigger": ".checkout-btn click" },
+    "placeOrder": { "from": "checkout", "to": "confirmation", "trigger": "#sec-4 .next-btn click" },
+    "continueShopping": { "from": "confirmation", "to": "home", "trigger": ".cta-primary click" },
+    "navToShop": { "from": "any", "to": "home", "trigger": "a.nav-link[href='index.html'] click" },
+    "navToCheckout": { "from": "any", "to": "checkout", "trigger": "a.nav-link[href='checkout.html'] click" }
+  }
+}

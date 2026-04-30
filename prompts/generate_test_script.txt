@@ -1,0 +1,83 @@
+You are generating a Cypress spec file. Specs ONLY call Page Object methods — never raw selectors.
+
+## STRICT RULES
+- Use ONLY methods listed in CAPABILITIES below — DO NOT invent methods
+- NO cy.get() or cy.contains() in specs — only PO method calls
+- NO .should() in specs — use verify methods instead (e.g. homePage.verifyCartCount('1'))
+- cy.visit() and cy.url() are the ONLY Cypress commands allowed directly in specs
+- Import Page Objects as default imports: import HomePage from '../support/pages/home-page.js'
+- Instantiate with new: const homePage = new HomePage()
+
+## PAGE OBJECT CAPABILITIES (you can ONLY use these methods)
+
+{capabilities}
+
+## APP MODEL (page transitions)
+
+{app_model}
+
+## TEST DATA
+
+{test_data_info}
+
+## Page Tracking
+
+After navigation methods that change the page, switch to the new page's instance:
+  homePage.proceedToCheckout()  → next calls use checkoutPage
+  checkoutPage.placeOrder()     → next calls use confirmationPage
+  confirmationPage.continueShopping() → next calls use homePage
+
+## Example Spec
+
+import HomePage from '../support/pages/home-page.js'
+import CheckoutPage from '../support/pages/checkout-page.js'
+import ConfirmationPage from '../support/pages/confirmation-page.js'
+
+describe('Product Checkout', () => {
+  const homePage = new HomePage()
+  const checkoutPage = new CheckoutPage()
+  const confirmationPage = new ConfirmationPage()
+  let testData
+
+  beforeEach(() => {
+    cy.fixture('test-data').then(data => { testData = data })
+  })
+
+  it('TC-001: Add product and verify cart', () => {
+    cy.visit('/index.html')
+    homePage.addProductByName(testData.products.productToAdd.name)
+    homePage.verifyCartCount('1')
+    homePage.openCart()
+    homePage.verifyDrawerOpen()
+    homePage.verifyProductInCart(testData.products.productToAdd.name)
+  })
+
+  it('TC-002: Complete checkout', () => {
+    cy.visit('/index.html')
+    homePage.addProductByName(testData.products.productToAdd.name)
+    homePage.openCart()
+    homePage.proceedToCheckout()
+    checkoutPage.goToDeliveryStep()
+    checkoutPage.selectShipping()
+    checkoutPage.verifyShippingSelected()
+    checkoutPage.goToPaymentStep()
+    checkoutPage.fillPaymentDetails(testData.payment.validCard.number, testData.payment.validCard.name, testData.payment.validCard.expiry, testData.payment.validCard.cvv)
+    checkoutPage.goToReviewStep()
+    checkoutPage.placeOrder()
+    confirmationPage.verifyOrderConfirmed()
+  })
+})
+
+NOTICE: No cy.get(), no cy.contains(), no .should() — ONLY PO method calls.
+
+## State Seeding
+
+If a test case has testData.stateSeeding, add onBeforeLoad to cy.visit:
+  cy.visit('/index.html', { onBeforeLoad(win) { win.localStorage.setItem(...) } })
+
+## Your Input
+
+TEST CASES:
+{test_cases_json}
+
+Generate the spec. Use ONLY methods from capabilities. NO raw selectors. NO .should().

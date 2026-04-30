@@ -1,0 +1,96 @@
+{
+  "feature": "Browse Products",
+  "story": "As a shopper, I want to browse the product catalogue, search for products by name, and filter by category, so that I can find items I want to purchase.",
+  "cases": [
+    {
+      "id": "TC-001",
+      "title": "View all products on homepage",
+      "priority": "high",
+      "steps": [
+        "Open the NOVA Store homepage"
+      ],
+      "assertions": [
+        "All 18 products should be displayed in a grid layout"
+      ],
+      "testData": null
+    },
+    {
+      "id": "TC-002",
+      "title": "Search for a product by name",
+      "priority": "high",
+      "steps": [
+        "Open the NOVA Store homepage",
+        "Enter the search term 'headphones' in the search bar"
+      ],
+      "assertions": [
+        "Only products matching 'headphones' should be visible",
+        "The results count should update to reflect the number of matching products"
+      ],
+      "testData": {
+        "searchTerm": "headphones"
+      }
+    },
+    {
+      "id": "TC-003",
+      "title": "Search with no results",
+      "priority": "medium",
+      "steps": [
+        "Open the NOVA Store homepage",
+        "Enter the search term 'xyznonexistent' in the search bar"
+      ],
+      "assertions": [
+        "A 'no results' message should appear"
+      ],
+      "testData": {
+        "searchTerm": "xyznonexistent"
+      }
+    },
+    {
+      "id": "TC-004",
+      "title": "Filter products by category",
+      "priority": "high",
+      "steps": [
+        "Open the NOVA Store homepage",
+        "Click the 'Tech' category filter chip"
+      ],
+      "assertions": [
+        "Only products in the 'Tech' category should be visible",
+        "The 'Tech' category chip should be visually highlighted"
+      ],
+      "testData": {
+        "category": "Tech"
+      }
+    },
+    {
+      "id": "TC-005",
+      "title": "Reset filters to view all products",
+      "priority": "medium",
+      "steps": [
+        "Open the NOVA Store homepage",
+        "Click the 'All' category filter chip"
+      ],
+      "assertions": [
+        "All 18 products should be visible again"
+      ],
+      "testData": null
+    },
+    {
+      "id": "TC-006",
+      "title": "Combined search and filter",
+      "priority": "medium",
+      "steps": [
+        "Open the NOVA Store homepage",
+        "Click the 'Tech' category filter chip",
+        "Enter the search term 'headphones' in the search bar"
+      ],
+      "assertions": [
+        "Only products in the 'Tech' category matching 'headphones' should be visible",
+        "The results count should update to reflect the number of matching products"
+      ],
+      "testData": {
+        "category": "Tech",
+        "searchTerm": "headphones"
+      }
+    }
+  ]
+}

@@ -1,0 +1,547 @@
+{
+  "HomePage": {
+    "fileName": "home-page.js",
+    "importPath": "home-page",
+    "elements": [
+      {
+        "name": "searchInput",
+        "description": "element: this.elements.searchInput()"
+      },
+      {
+        "name": "cartCount",
+        "description": "element: this.elements.cartCount()"
+      },
+      {
+        "name": "loginButton",
+        "description": "element: this.elements.loginButton()"
+      },
+      {
+        "name": "signUpButton",
+        "description": "element: this.elements.signUpButton()"
+      },
+      {
+        "name": "cartPill",
+        "description": "element: this.elements.cartPill()"
+      },
+      {
+        "name": "drawer",
+        "description": "element: this.elements.drawer()"
+      },
+      {
+        "name": "checkoutBtn",
+        "description": "element: this.elements.checkoutBtn()"
+      },
+      {
+        "name": "authModal",
+        "description": "element: this.elements.authModal()"
+      },
+      {
+        "name": "userChip",
+        "description": "element: this.elements.userChip()"
+      },
+      {
+        "name": "unameLabel",
+        "description": "element: this.elements.unameLabel()"
+      },
+      {
+        "name": "loginEmail",
+        "description": "element: this.elements.loginEmail()"
+      },
+      {
+        "name": "loginPassword",
+        "description": "element: this.elements.loginPassword()"
+      },
+      {
+        "name": "signupName",
+        "description": "element: this.elements.signupName()"
+      },
+      {
+        "name": "signupEmail",
+        "description": "element: this.elements.signupEmail()"
+      },
+      {
+        "name": "signupPassword",
+        "description": "element: this.elements.signupPassword()"
+      },
+      {
+        "name": "signupMessage",
+        "description": "element: this.elements.signupMessage()"
+      },
+      {
+        "name": "loginMessage",
+        "description": "element: this.elements.loginMessage()"
+      }
+    ],
+    "actions": [
+      {
+        "name": "addProductByName",
+        "params": [
+          "name"
+        ],
+        "description": "addProductByName(name)"
+      },
+      {
+        "name": "addProductByIndex",
+        "params": [
+          "index"
+        ],
+        "description": "addProductByIndex(index)"
+      },
+      {
+        "name": "searchFor",
+        "params": [
+          "text"
+        ],
+        "description": "searchFor(text)"
+      },
+      {
+        "name": "filterByCategory",
+        "params": [
+          "category"
+        ],
+        "description": "filterByCategory(category)"
+      },
+      {
+        "name": "openCart",
+        "params": [],
+        "description": "openCart()"
+      },
+      {
+        "name": "proceedToCheckout",
+        "params": [],
+        "description": "proceedToCheckout()"
+      },
+      {
+        "name": "openLogin",
+        "params": [],
+        "description": "openLogin()"
+      },
+      {
+        "name": "openSignup",
+        "params": [],
+        "description": "openSignup()"
+      },
+      {
+        "name": "login",
+        "params": [
+          "email",
+          "password"
+        ],
+        "description": "login(email, password)"
+      },
+      {
+        "name": "signup",
+        "params": [
+          "name",
+          "email",
+          "password"
+        ],
+        "description": "signup(name, email, password)"
+      },
+      {
+        "name": "logout",
+        "params": [],
+        "description": "logout()"
+      }
+    ],
+    "verifiers": [
+      {
+        "name": "verifyCartCount",
+        "params": [
+          "expected"
+        ],
+        "description": "verifyCartCount(expected)"
+      },
+      {
+        "name": "verifyProductInCart",
+        "params": [
+          "productName"
+        ],
+        "description": "verifyProductInCart(productName)"
+      },
+      {
+        "name": "verifyCartPriceInDrawer",
+        "params": [
+          "expectedPrice"
+        ],
+        "description": "verifyCartPriceInDrawer(expectedPrice)"
+      },
+      {
+        "name": "verifyDrawerOpen",
+        "params": [],
+        "description": "verifyDrawerOpen()"
+      },
+      {
+        "name": "verifySignupMessage",
+        "params": [
+          "expected"
+        ],
+        "description": "verifySignupMessage(expected)"
+      },
+      {
+        "name": "verifyLoginMessage",
+        "params": [
+          "expected"
+        ],
+        "description": "verifyLoginMessage(expected)"
+      },
+      {
+        "name": "verifyUserChipVisible",
+        "params": [
+          "expectedName"
+        ],
+        "description": "verifyUserChipVisible(expectedName)"
+      },
+      {
+        "name": "verifyAuthButtonsNotVisible",
+        "params": [],
+        "description": "verifyAuthButtonsNotVisible()"
+      },
+      {
+        "name": "verifyProductCount",
+        "params": [
+          "expected"
+        ],
+        "description": "verifyProductCount(expected)"
+      },
+      {
+        "name": "verifyNoResults",
+        "params": [],
+        "description": "verifyNoResults()"
+      },
+      {
+        "name": "verifyResultsInfo",
+        "params": [
+          "expected"
+        ],
+        "description": "verifyResultsInfo(expected)"
+      },
+      {
+        "name": "verifyFilterActive",
+        "params": [
+          "category"
+        ],
+        "description": "verifyFilterActive(category)"
+      },
+      {
+        "name": "verifyAuthModalVisible",
+        "params": [],
+        "description": "verifyAuthModalVisible()"
+      },
+      {
+        "name": "verifyUrl",
+        "params": [
+          "expected"
+        ],
+        "description": "verifyUrl(expected)"
+      }
+    ]
+  },
+  "CheckoutPage": {
+    "fileName": "checkout-page.js",
+    "importPath": "checkout-page",
+    "elements": [
+      {
+        "name": "step1",
+        "description": "element: this.elements.step1()"
+      },
+      {
+        "name": "step2",
+        "description": "element: this.elements.step2()"
+      },
+      {
+        "name": "step3",
+        "description": "element: this.elements.step3()"
+      },
+      {
+        "name": "step4",
+        "description": "element: this.elements.step4()"
+      },
+      {
+        "name": "cartSection",
+        "description": "element: this.elements.cartSection()"
+      },
+      {
+        "name": "deliverySection",
+        "description": "element: this.elements.deliverySection()"
+      },
+      {
+        "name": "paymentSection",
+        "description": "element: this.elements.paymentSection()"
+      },
+      {
+        "name": "reviewSection",
+        "description": "element: this.elements.reviewSection()"
+      },
+      {
+        "name": "cartItemsList",
+        "description": "element: this.elements.cartItemsList()"
+      },
+      {
+        "name": "shippingOption",
+        "description": "element: this.elements.shippingOption()"
+      },
+      {
+        "name": "pickupOption",
+        "description": "element: this.elements.pickupOption()"
+      },
+      {
+        "name": "pickupDetails",
+        "description": "element: this.elements.pickupDetails()"
+      },
+      {
+        "name": "locationGrid",
+        "description": "element: this.elements.locationGrid()"
+      },
+      {
+        "name": "scheduleSection",
+        "description": "element: this.elements.scheduleSection()"
+      },
+      {
+        "name": "datePicker",
+        "description": "element: this.elements.datePicker()"
+      },
+      {
+        "name": "timeSection",
+        "description": "element: this.elements.timeSection()"
+      },
+      {
+        "name": "timeGrid",
+        "description": "element: this.elements.timeGrid()"
+      },
+      {
+        "name": "ccNumber",
+        "description": "element: this.elements.ccNumber()"
+      },
+      {
+        "name": "ccName",
+        "description": "element: this.elements.ccName()"
+      },
+      {
+        "name": "ccExp",
+        "description": "element: this.elements.ccExp()"
+      },
+      {
+        "name": "ccCvv",
+        "description": "element: this.elements.ccCvv()"
+      },
+      {
+        "name": "reviewDelivery",
+        "description": "element: this.elements.reviewDelivery()"
+      },
+      {
+        "name": "reviewPayment",
+        "description": "element: this.elements.reviewPayment()"
+      },
+      {
+        "name": "reviewItems",
+        "description": "element: this.elements.reviewItems()"
+      },
+      {
+        "name": "orderSummary",
+        "description": "element: this.elements.orderSummary()"
+      },
+      {
+        "name": "summaryItems",
+        "description": "element: this.elements.summaryItems()"
+      },
+      {
+        "name": "pickupSummary",
+        "description": "element: this.elements.pickupSummary()"
+      },
+      {
+        "name": "pickupSummaryDetail",
+        "description": "element: this.elements.pickupSummaryDetail()"
+      },
+      {
+        "name": "btnToDelivery",
+        "description": "element: this.elements.btnToDelivery()"
+      },
+      {
+        "name": "btnToPayment",
+        "description": "element: this.elements.btnToPayment()"
+      },
+      {
+        "name": "btnReviewOrder",
+        "description": "element: this.elements.btnReviewOrder()"
+      },
+      {
+        "name": "btnPlaceOrder",
+        "description": "element: this.elements.btnPlaceOrder()"
+      },
+      {
+        "name": "continueShoppingLink",
+        "description": "element: this.elements.continueShoppingLink()"
+      }
+    ],
+    "actions": [
+      {
+        "name": "goToDeliveryStep",
+        "params": [],
+        "description": "goToDeliveryStep()"
+      },
+      {
+        "name": "goToPaymentStep",
+        "params": [],
+        "description": "goToPaymentStep()"
+      },
+      {
+        "name": "goToReviewStep",
+        "params": [],
+        "description": "goToReviewStep()"
+      },
+      {
+        "name": "placeOrder",
+        "params": [],
+        "description": "placeOrder()"
+      },
+      {
+        "name": "selectShipping",
+        "params": [],
+        "description": "selectShipping()"
+      },
+      {
+        "name": "selectPickup",
+        "params": [],
+        "description": "selectPickup()"
+      },
+      {
+        "name": "selectStoreByText",
+        "params": [
+          "name"
+        ],
+        "description": "selectStoreByText(name)"
+      },
+      {
+        "name": "selectDateByText",
+        "params": [
+          "text"
+        ],
+        "description": "selectDateByText(text)"
+      },
+      {
+        "name": "selectTimeByText",
+        "params": [
+          "text"
+        ],
+        "description": "selectTimeByText(text)"
+      },
+      {
+        "name": "fillPaymentDetails",
+        "params": [
+          "number",
+          "name",
+          "exp",
+          "cvv"
+        ],
+        "description": "fillPaymentDetails(number, name, exp, cvv)"
+      }
+    ],
+    "verifiers": [
+      {
+        "name": "verifyStepVisible",
+        "params": [
+          "stepName"
+        ],
+        "description": "verifyStepVisible(stepName)"
+      },
+      {
+        "name": "verifyShippingSelected",
+        "params": [],
+        "description": "verifyShippingSelected()"
+      },
+      {
+        "name": "verifyPickupSelected",
+        "params": [],
+        "description": "verifyPickupSelected()"
+      },
+      {
+        "name": "verifyOrderConfirmed",
+        "params": [],
+        "description": "verifyOrderConfirmed()"
+      },
+      {
+        "name": "verifyOrderIdVisible",
+        "params": [],
+        "description": "verifyOrderIdVisible()"
+      }
+    ]
+  },
+  "ConfirmationPage": {
+    "fileName": "confirmation-page.js",
+    "importPath": "confirmation-page",
+    "elements": [
+      {
+        "name": "orderId",
+        "description": "element: this.elements.orderId()"
+      },
+      {
+        "name": "detailCards",
+        "description": "element: this.elements.detailCards()"
+      },
+      {
+        "name": "itemsList",
+        "description": "element: this.elements.itemsList()"
+      },
+      {
+        "name": "totalsSection",
+        "description": "element: this.elements.totalsSection()"
+      },
+      {
+        "name": "printReceiptBtn",
+        "description": "element: this.elements.printReceiptBtn()"
+      },
+      {
+        "name": "continueShoppingLink",
+        "description": "element: this.elements.continueShoppingLink()"
+      },
+      {
+        "name": "navLogo",
+        "description": "element: this.elements.navLogo()"
+      },
+      {
+        "name": "shopLink",
+        "description": "element: this.elements.shopLink()"
+      }
+    ],
+    "actions": [
+      {
+        "name": "printReceipt",
+        "params": [],
+        "description": "printReceipt()"
+      },
+      {
+        "name": "continueShopping",
+        "params": [],
+        "description": "continueShopping()"
+      }
+    ],
+    "verifiers": [
+      {
+        "name": "verifyOrderConfirmed",
+        "params": [],
+        "description": "verifyOrderConfirmed()"
+      },
+      {
+        "name": "verifyOrderIdVisible",
+        "params": [],
+        "description": "verifyOrderIdVisible()"
+      },
+      {
+        "name": "verifyItemsListVisible",
+        "params": [],
+        "description": "verifyItemsListVisible()"
+      },
+      {
+        "name": "verifyTotalsSectionVisible",
+        "params": [],
+        "description": "verifyTotalsSectionVisible()"
+      },
+      {
+        "name": "verifyDetailCardsVisible",
+        "params": [],
+        "description": "verifyDetailCardsVisible()"
+      }
+    ]
+  }
+}
