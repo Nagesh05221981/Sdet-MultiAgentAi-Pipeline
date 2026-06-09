@@ -122,59 +122,64 @@ function parseFailures(stdout) {
   const clean = stdout.replace(/\x1B\[[0-9;]*m/g, '');
   const lines = clean.split('\n');
 
-  // Find the spec file path from "Running:" line
+  // Build a map of spec → failures by tracking which spec is running
+  // when "N failing" appears. Cypress outputs per-spec blocks:
+  //   Running: cart-management.cy.js
+  //   ...tests...
+  //   1 failing        <-- failures belong to cart-management.cy.js
+  //   Running: user-signup.cy.js
+  //   ...tests...
   let currentSpec = '';
-  for (const line of lines) {
-    const specMatch = line.match(/Running:\s+(.+\.cy\.js)/);
+  const specFailingSections = []; // { spec, failingIdx }
+
+  for (let i = 0; i < lines.length; i++) {
+    const specMatch = lines[i].match(/Running:\s+(.+\.cy\.js)/);
     if (specMatch) {
       currentSpec = specMatch[1].trim();
-      // Ensure full path relative to project root
       if (!currentSpec.startsWith('cypress/')) {
         currentSpec = `cypress/e2e/${currentSpec}`;
       }
     }
+    if (/\d+\s+failing/.test(lines[i]) && currentSpec) {
+      specFailingSections.push({ spec: currentSpec, failingIdx: i });
+    }
   }
 
-  // Parse the failure detail section — starts after "N failing" line
-  const failingIdx = lines.findIndex((l) => /\d+\s+failing/.test(l));
-  if (failingIdx === -1) return failures;
+  // Parse each failure section
+  for (const { spec, failingIdx } of specFailingSections) {
+    const failureSection = lines.slice(failingIdx + 1);
+    const seen = new Set();
 
-  // After the "N failing" line, Cypress prints numbered failures like:
-  //   1) Suite Name
-  //        Test Name:
-  //     Error message...
-  const failureSection = lines.slice(failingIdx + 1);
-  const seen = new Set();
+    for (let i = 0; i < failureSection.length; i++) {
+      const line = failureSection[i];
+      // Stop at the next spec's "Running:" line
+      if (/Running:\s+.+\.cy\.js/.test(line)) break;
 
-  for (let i = 0; i < failureSection.length; i++) {
-    const line = failureSection[i];
-    // Match "  N) Test suite name\n       test name:" pattern
-    const failMatch = line.match(/^\s+(\d+)\)\s+(.+)/);
-    if (failMatch) {
-      const testName = failMatch[2].trim();
+      const failMatch = line.match(/^\s+(\d+)\)\s+(.+)/);
+      if (failMatch) {
+        const testName = failMatch[2].trim();
+        if (seen.has(testName)) continue;
+        seen.add(testName);
 
-      // Deduplicate — same test name should only appear once
-      if (seen.has(testName)) continue;
-      seen.add(testName);
+        const errorLines = [];
+        for (let j = i + 1; j < Math.min(i + 12, failureSection.length); j++) {
+          const errLine = failureSection[j];
+          if (/^\s+\d+\)\s+/.test(errLine)) break;
+          if (/Running:\s+.+\.cy\.js/.test(errLine)) break;
+          if (errLine.trim()) errorLines.push(errLine.trim());
+        }
 
-      // Collect error lines (next 8 non-empty lines)
-      const errorLines = [];
-      for (let j = i + 1; j < Math.min(i + 12, failureSection.length); j++) {
-        const errLine = failureSection[j];
-        if (/^\s+\d+\)\s+/.test(errLine)) break; // next failure
-        if (errLine.trim()) errorLines.push(errLine.trim());
+        failures.push({
+          spec,
+          testName,
+          error: errorLines.join('\n'),
+        });
       }
-
-      failures.push({
-        spec: currentSpec || 'unknown',
-        testName,
-        error: errorLines.join('\n'),
-      });
     }
   }
 
   // Fallback if no structured failures found
-  if (!failures.length) {
+  if (!failures.length && currentSpec) {
     failures.push({
       spec: currentSpec || 'unknown',
       testName: 'unknown',
