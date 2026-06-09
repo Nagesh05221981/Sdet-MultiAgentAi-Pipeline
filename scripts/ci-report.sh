@@ -34,15 +34,19 @@ build_summary() {
 
 # ── Path A: Fixes were applied → create draft PR ──
 if [ "$FIXES_APPLIED" = "true" ]; then
-  BRANCH_NAME="auto-fix/regression-${DATE_SHORT}-$(date +%H%M)"
-
-  echo "Creating branch: $BRANCH_NAME"
   git config user.name "github-actions[bot]"
   git config user.email "github-actions[bot]@users.noreply.github.com"
-  git checkout -b "$BRANCH_NAME"
   git add cypress/e2e/*.cy.js
-  git commit -m "fix(ci): auto-heal failing regression tests — $DATE_SHORT"
-  git push -u origin "$BRANCH_NAME"
+
+  # Only create PR if there are actual changes to commit
+  if git diff --cached --quiet; then
+    echo "No file changes detected — fixer ran but specs are unchanged. Skipping PR."
+  else
+    BRANCH_NAME="auto-fix/regression-${DATE_SHORT}-$(date +%H%M)"
+    echo "Creating branch: $BRANCH_NAME"
+    git checkout -b "$BRANCH_NAME"
+    git commit -m "fix(ci): auto-heal failing regression tests — $DATE_SHORT"
+    git push -u origin "$BRANCH_NAME"
 
   PR_BODY=$(cat <<EOF
 ## Regression Auto-Fix — $DATE_SHORT
@@ -70,7 +74,8 @@ EOF
     --title "Auto-fix: regression test failures $DATE_SHORT" \
     --body "$PR_BODY"
 
-  echo "Draft PR created successfully."
+    echo "Draft PR created successfully."
+  fi
 fi
 
 # ── Path B: Unfixed failures remain → create GitHub Issue ──
@@ -96,8 +101,7 @@ EOF
 
   gh issue create \
     --title "Regression failures: $DATE_SHORT" \
-    --body "$ISSUE_BODY" \
-    --label "bug"
+    --body "$ISSUE_BODY"
 
   echo "GitHub Issue created for unfixed failures."
 fi
