@@ -97,7 +97,7 @@ EOF
   gh issue create \
     --title "Regression failures: $DATE_SHORT" \
     --body "$ISSUE_BODY" \
-    --label "bug,automated"
+    --label "bug"
 
   echo "GitHub Issue created for unfixed failures."
 fi

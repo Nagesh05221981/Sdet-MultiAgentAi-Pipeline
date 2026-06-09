@@ -118,7 +118,9 @@ export async function runCypressSpecs(specPattern = 'cypress/e2e/**/*.cy.js') {
  */
 function parseFailures(stdout) {
   const failures = [];
-  const lines = stdout.split('\n');
+  // Strip ANSI escape codes before parsing
+  const clean = stdout.replace(/\x1B\[[0-9;]*m/g, '');
+  const lines = clean.split('\n');
 
   // Find the spec file path from "Running:" line
   let currentSpec = '';
