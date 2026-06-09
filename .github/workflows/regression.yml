@@ -40,6 +40,9 @@ jobs:
           OPENAI_API_BASE: ${{ secrets.OPENAI_API_BASE }}
           OPENAI_MODEL: ${{ vars.OPENAI_MODEL || 'gpt-4o' }}
           BASE_URL: http://localhost:8080
+          LANGCHAIN_TRACING_V2: 'true'
+          LANGCHAIN_API_KEY: ${{ secrets.LANGCHAIN_API_KEY }}
+          LANGCHAIN_PROJECT: sdet-pipeline
         run: node index.js --mode=regression --ci
 
       - name: Handle fixes and failures
