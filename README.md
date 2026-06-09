@@ -39,19 +39,66 @@ USER_STORY="Filter products by Tech category" node index.js
 
 ## Pipeline Modes
 
-| Mode | Command | What It Does |
-|------|---------|--------------|
-| **Development** | `npm run test:dev` | Full pipeline: design + generate + run + fix |
-| **Regression** | `npm run test:regression` | Skip generation, run existing specs + fix failures |
-| **CI** | `npm run test:ci` | Regression mode with JSON results + exit codes for CI/CD |
+### Development Mode (default)
+
+Runs the full 5-stage pipeline: generates Page Objects, designs test cases from user stories, generates Cypress specs, runs them, and self-heals failures.
 
 ```bash
-# Mode can also be set via flag or environment variable
-node index.js --mode=regression
-PIPELINE_MODE=regression node index.js
+npm run test:dev
+node index.js --mode=development
+node index.js                        # default — same as development
+node index.js browse-products        # single story
+```
 
-# Run a specific spec in regression mode
-node index.js --mode=regression browse-products
+| Stage | Agent | What Happens |
+|-------|-------|-------------|
+| 0 | PageObjectGenerator | Parses app DOM, generates PO classes (skipped if POs exist) |
+| 1 | TestCaseDesigner | LLM reads user story + app model, outputs structured test cases |
+| 2 | TestCodeGenerator | LLM generates Cypress spec using only PO methods, AST-validated |
+| 3 | TestRunner | Runs all generated specs via Cypress |
+| 4 | TestFixer | LLM fixes failing specs, re-runs per spec (up to 3 retries) |
+
+### Regression Mode
+
+Skips all generation (stages 0-2). Runs existing specs and self-heals any failures. Use for nightly runs, CI, or quick validation after app changes.
+
+```bash
+npm run test:regression
+node index.js --mode=regression
+node index.js --mode=regression browse-products   # single spec
+PIPELINE_MODE=regression node index.js            # via env var
+```
+
+| Stage | What Happens |
+|-------|-------------|
+| 0-2 | **Skipped** — no PO gen, no design, no codegen |
+| 3 | Runs existing specs from `cypress/e2e/` |
+| 4 | Self-heals failures (up to 3 retries per spec) |
+
+### CI Mode
+
+Same as regression mode but writes `ci-results.json` and exits with a code that tells the CI workflow what to do next.
+
+```bash
+npm run test:ci
+node index.js --mode=regression --ci
+```
+
+| Exit Code | Meaning | CI Action |
+|-----------|---------|-----------|
+| 0 | All tests passed | Green build |
+| 1 | Tests failed, fixer couldn't heal | GitHub Issue created |
+| 2 | Tests failed, fixer healed them | Draft PR created for review |
+
+### Legacy Run
+
+Running without any flags works exactly as before — defaults to development mode.
+
+```bash
+npm start                                          # all stories
+node index.js                                      # all stories
+node index.js browse-products                      # single story
+USER_STORY="Filter by Tech category" node index.js # ad-hoc story
 ```
 
 ## Agents
