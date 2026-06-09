@@ -2,6 +2,7 @@ node_modules/
 .env
 cypress/screenshots/
 cypress/videos/
+cypress/results/
 cypress/dom-snapshots/
 cypress-failure.log
 cypress-failure-context.json

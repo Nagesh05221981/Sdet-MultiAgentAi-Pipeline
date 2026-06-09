@@ -23,6 +23,10 @@ const PROJECT_ROOT = path.resolve(__dirname, '..');
 export async function runCypressSpecs(specPattern = 'cypress/e2e/**/*.cy.js') {
   log('RUN', `Running Cypress: ${specPattern}`);
 
+  // Clean previous results — overwrite each run to save storage
+  const resultsDir = path.resolve(PROJECT_ROOT, 'cypress/results');
+  await fs.rm(resultsDir, { recursive: true, force: true });
+
   return new Promise(async (resolve) => {
     const args = ['cypress', 'run', '--spec', specPattern];
     const proc = spawn('npx', args, {
