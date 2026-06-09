@@ -12,7 +12,7 @@ describe('Add Product to Cart and Checkout', () => {
     cy.fixture('test-data').then(data => { testData = data })
   })
 
-  it('TC-001: Add a product to the cart and verify', () => {
+  it('TC-001: Add LED Lamp to Cart and Verify', () => {
     cy.visit('/index.html')
     homePage.addProductByName(testData.products.ledLamp.name)
     homePage.verifyCartCount('1')
@@ -27,7 +27,7 @@ describe('Add Product to Cart and Checkout', () => {
   it('TC-002: Checkout with Store Pickup', () => {
     cy.visit('/index.html', {
       onBeforeLoad(win) {
-        win.localStorage.setItem('nova_cart', JSON.stringify({ "1": 1 }))
+        win.localStorage.setItem('nova_cart', JSON.stringify(testData.stateSeeding.cartWithOneItem.localStorage.nova_cart))
       }
     })
     homePage.openCart()
@@ -53,6 +53,8 @@ describe('Add Product to Cart and Checkout', () => {
     checkoutPage.placeOrder()
     confirmationPage.verifyOrderConfirmed()
     confirmationPage.verifyOrderIdVisible()
-    confirmationPage.continueShopping()
+    confirmationPage.verifyItemsListVisible()
+    confirmationPage.verifyTotalsSectionVisible()
+    confirmationPage.verifyDetailCardsVisible()
   })
 })

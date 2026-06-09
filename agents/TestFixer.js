@@ -28,6 +28,9 @@ export async function runTestFixer(failureContext, domSnapshot, pageIds = ['home
     return null;
   }
 
+  // Sync fixture data from app-model (fixes missing testData.appMessages etc.)
+  await syncFixtureFromAppModel();
+
   // Read current spec
   let specCode = '';
   try {
@@ -36,6 +39,14 @@ export async function runTestFixer(failureContext, domSnapshot, pageIds = ['home
     logError('FIX', `Cannot read spec: ${failureContext.spec}`, err);
     return null;
   }
+
+  // Read current fixture for context
+  let fixtureData = '';
+  try {
+    fixtureData = await fs.readFile(
+      path.resolve(PROJECT_ROOT, 'cypress/fixtures/test-data.json'), 'utf-8'
+    );
+  } catch { /* no fixture */ }
 
   // Extract capabilities
   const pagesDir = path.resolve(PROJECT_ROOT, 'cypress/support/pages');
@@ -49,6 +60,9 @@ ${capabilitiesPrompt}
 
 ## APP MODEL
 ${appModel}
+
+## FIXTURE DATA (available as testData via cy.fixture('test-data'))
+${fixtureData}
 
 ## FAILURE CONTEXT
 Type: ${failureContext.failureType}
@@ -66,6 +80,9 @@ ${specCode}
 - If a method doesn't exist, find the closest available method from CAPABILITIES
 - If attempt 2+, try a different approach
 - Keep all passing tests unchanged
+- ONLY reference keys that actually exist in FIXTURE DATA above
+- For state seeding, use testData.stateSeeding keys from the fixture
+- For app messages, use testData.appMessages keys from the fixture
 
 Output ONLY the fixed spec code. No explanation. No markdown fences.`;
 
@@ -84,5 +101,45 @@ Output ONLY the fixed spec code. No explanation. No markdown fences.`;
   } catch (err) {
     logError('FIX', `Fix attempt ${attempt} failed`, err);
     return null;
+  }
+}
+
+/**
+ * Sync missing appMessages and stateSeeding from app-model.json into test-data.json.
+ * This ensures the fixture has all data the LLM might reference in generated specs.
+ */
+async function syncFixtureFromAppModel() {
+  try {
+    const fixturePath = path.resolve(PROJECT_ROOT, 'cypress/fixtures/test-data.json');
+    const fixtureRaw = await fs.readFile(fixturePath, 'utf-8');
+    const fixture = JSON.parse(fixtureRaw);
+    const model = JSON.parse(appModel);
+
+    let updated = false;
+    if (model.appMessages && !fixture.appMessages) {
+      fixture.appMessages = model.appMessages;
+      updated = true;
+    }
+    if (model.stateSeeding && !fixture.stateSeeding) {
+      // Parse pre-serialized JSON strings in localStorage values into real objects
+      const parsed = JSON.parse(JSON.stringify(model.stateSeeding));
+      for (const [key, seed] of Object.entries(parsed)) {
+        if (seed.localStorage) {
+          for (const [lsKey, lsVal] of Object.entries(seed.localStorage)) {
+            if (typeof lsVal === 'string') {
+              try { parsed[key].localStorage[lsKey] = JSON.parse(lsVal); } catch { /* keep as string */ }
+            }
+          }
+        }
+      }
+      fixture.stateSeeding = parsed;
+      updated = true;
+    }
+    if (updated) {
+      await fs.writeFile(fixturePath, JSON.stringify(fixture, null, 2) + '\n', 'utf-8');
+      log('FIX', 'Synced missing fixture data from app-model');
+    }
+  } catch (err) {
+    logError('FIX', 'Could not sync fixture from app-model', err);
   }
 }

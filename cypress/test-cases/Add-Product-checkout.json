@@ -7,7 +7,7 @@
       "title": "Add a product to the cart and verify",
       "priority": "high",
       "steps": [
-        "Open the NOVA Store homepage",
+        "Navigate to the homepage",
         "Locate the first product in the product catalogue",
         "Click the Add button on the first product",
         "Verify the cart badge displays 1",
@@ -17,6 +17,7 @@
       ],
       "assertions": [
         "Cart badge should display 1",
+        "Cart drawer should be visible",
         "Product name in cart should match the selected product",
         "Product price in cart should match the selected product price"
       ],
@@ -27,9 +28,6 @@
       "title": "Complete checkout with Standard Shipping",
       "priority": "high",
       "steps": [
-        "Open the NOVA Store homepage",
-        "Locate the first product in the product catalogue",
-        "Click the Add button on the first product",
         "Open the cart drawer",
         "Click the Proceed to Checkout button",
         "Verify the checkout page is displayed",
@@ -46,17 +44,19 @@
         "Click the Review Order button",
         "Verify the order review section is displayed",
         "Click the Place Order button",
-        "Verify the Order Confirmed! message is displayed",
+        "Verify the order confirmation page is displayed",
+        "Verify the order confirmation message is 'Order Confirmed!'",
         "Verify the Continue Shopping button is displayed"
       ],
       "assertions": [
         "Checkout page should be displayed",
-        "Delivery options should be displayed",
+        "Delivery options should be visible",
         "Standard Shipping option should be highlighted",
-        "Payment details section should be displayed",
-        "Order review section should be displayed",
-        "Order Confirmed! message should be displayed",
-        "Continue Shopping button should be displayed"
+        "Payment details section should be visible",
+        "Order review section should be visible",
+        "Order confirmation page should be displayed",
+        "Order confirmation message should be 'Order Confirmed!'",
+        "Continue Shopping button should be visible"
       ],
       "testData": {
         "stateSeeding": "cartWithOneItem"

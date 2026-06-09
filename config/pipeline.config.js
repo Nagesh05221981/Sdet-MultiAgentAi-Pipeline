@@ -2,7 +2,12 @@
  * Pipeline configuration — retry limits, timeouts, model settings.
  */
 
+export const VALID_MODES = ['development', 'regression'];
+
 export const PIPELINE = {
+  // Run mode — 'development' (full pipeline) or 'regression' (run + fix only)
+  defaultMode: 'development',
+
   // LLM settings
   model: 'gpt-4o',
   temperature: 0,
@@ -22,6 +27,9 @@ export const PIPELINE = {
   pagesDir: 'cypress/support/pages',
   snapshotsDir: 'cypress/dom-snapshots',
   fixturesDir: 'cypress/fixtures',
+
+  // CI
+  ciResultsFile: 'ci-results.json',
 
   // Logging
   failureLogFile: 'cypress-failure.log',

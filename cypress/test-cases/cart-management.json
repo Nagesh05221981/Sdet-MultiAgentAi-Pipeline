@@ -7,30 +7,30 @@
       "title": "Add a product to the cart and verify cart badge update",
       "priority": "high",
       "steps": [
-        "Start on the homepage",
-        "Click the '+ Add' button on the first product card",
-        "Verify the button text changes to '✓ Added'",
-        "Verify the cart badge displays '1'"
+        "Navigate to the homepage",
+        "Locate the first product card",
+        "Click the '+ Add' button on the product card",
+        "Observe the button text changes to '✓ Added'",
+        "Check the cart badge in the navigation bar"
       ],
       "assertions": [
-        "The product is added to the cart",
-        "The cart badge updates to show '1'"
+        "The cart badge should display '1'"
       ],
       "testData": null
     },
     {
       "id": "TC-002",
-      "title": "Open cart drawer and view cart items",
+      "title": "Open cart drawer and verify cart contents",
       "priority": "high",
       "steps": [
-        "Start on the homepage with one item in the cart",
+        "Ensure the cart has at least one item",
         "Click the cart pill in the navigation bar",
-        "Verify the cart drawer is visible",
-        "Verify the cart drawer lists the added product with name, price, and quantity"
+        "Observe the cart drawer slides open",
+        "Check the list of products in the cart drawer"
       ],
       "assertions": [
-        "Cart drawer opens",
-        "Cart drawer displays product details"
+        "The cart drawer should be visible",
+        "The cart drawer should list all added products with name, price, and quantity"
       ],
       "testData": {
         "stateSeeding": "cartWithOneItem"
@@ -38,18 +38,16 @@
     },
     {
       "id": "TC-003",
-      "title": "Increase item quantity in the cart",
+      "title": "Increase product quantity in the cart",
       "priority": "medium",
       "steps": [
-        "Start on the homepage with one item in the cart",
-        "Click the cart pill to open the cart drawer",
-        "Click the '+' button next to the product in the cart",
-        "Verify the product quantity increases by 1",
-        "Verify the cart subtotal updates accordingly"
+        "Open the cart drawer",
+        "Locate the product in the cart",
+        "Click the '+' button to increase the quantity"
       ],
       "assertions": [
-        "Product quantity increases",
-        "Cart subtotal updates"
+        "The product quantity should increase by 1",
+        "The subtotal should update accordingly"
       ],
       "testData": {
         "stateSeeding": "cartWithOneItem"
@@ -57,18 +55,16 @@
     },
     {
       "id": "TC-004",
-      "title": "Decrease item quantity in the cart",
+      "title": "Decrease product quantity in the cart",
       "priority": "medium",
       "steps": [
-        "Start on the homepage with one item in the cart",
-        "Click the cart pill to open the cart drawer",
-        "Click the '-' button next to the product in the cart",
-        "Verify the product quantity decreases by 1",
-        "Verify the cart subtotal updates accordingly"
+        "Open the cart drawer",
+        "Locate the product in the cart",
+        "Click the '-' button to decrease the quantity"
       ],
       "assertions": [
-        "Product quantity decreases",
-        "Cart subtotal updates"
+        "The product quantity should decrease by 1",
+        "If the quantity reaches 0, the product should be removed from the cart"
       ],
       "testData": {
         "stateSeeding": "cartWithOneItem"
@@ -76,18 +72,16 @@
     },
     {
       "id": "TC-005",
-      "title": "Remove an item from the cart",
-      "priority": "high",
+      "title": "Remove a product from the cart",
+      "priority": "medium",
       "steps": [
-        "Start on the homepage with one item in the cart",
-        "Click the cart pill to open the cart drawer",
-        "Click the delete button next to the product in the cart",
-        "Verify the product is removed from the cart",
-        "Verify the cart badge displays '0'"
+        "Open the cart drawer",
+        "Locate the product in the cart",
+        "Click the delete button to remove the product"
       ],
       "assertions": [
-        "Product is removed from the cart",
-        "Cart badge updates to '0'"
+        "The product should be removed from the cart",
+        "The cart badge should update accordingly"
       ],
       "testData": {
         "stateSeeding": "cartWithOneItem"
@@ -96,16 +90,14 @@
     {
       "id": "TC-006",
       "title": "Verify empty cart state",
-      "priority": "medium",
+      "priority": "high",
       "steps": [
-        "Start on the homepage with an empty cart",
-        "Click the cart pill to open the cart drawer",
-        "Verify the cart drawer displays an 'empty cart' message",
-        "Verify the 'Proceed to Checkout' button is disabled"
+        "Ensure the cart is empty",
+        "Open the cart drawer"
       ],
       "assertions": [
-        "Empty cart message is displayed",
-        "Checkout button is disabled"
+        "The cart drawer should display an 'empty cart' message",
+        "The checkout button should be disabled"
       ],
       "testData": null
     },
@@ -114,13 +106,12 @@
       "title": "Proceed to checkout with items in the cart",
       "priority": "high",
       "steps": [
-        "Start on the homepage with one item in the cart",
-        "Click the cart pill to open the cart drawer",
-        "Click the 'Proceed to Checkout' button",
-        "Verify the URL includes 'checkout.html'"
+        "Ensure the cart has at least one item",
+        "Open the cart drawer",
+        "Click the 'Proceed to Checkout' button"
       ],
       "assertions": [
-        "Navigates to checkout page"
+        "The URL should include 'checkout.html'"
       ],
       "testData": {
         "stateSeeding": "cartWithOneItem"

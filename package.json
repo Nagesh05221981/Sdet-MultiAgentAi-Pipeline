@@ -7,6 +7,9 @@
   "scripts": {
     "start": "node index.js",
     "serve": "python3 -m http.server 8080 -d ecommerceTestApp",
+    "test:dev": "node index.js --mode=development",
+    "test:regression": "node index.js --mode=regression",
+    "test:ci": "node index.js --mode=regression --ci",
     "cypress:open": "npx cypress open",
     "cypress:run": "npx cypress run"
   },

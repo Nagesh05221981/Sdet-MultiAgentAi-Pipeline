@@ -4,72 +4,76 @@
   "cases": [
     {
       "id": "TC-001",
-      "title": "Add a product to the cart and verify",
+      "title": "Add LED Lamp to Cart and Verify",
       "priority": "high",
       "steps": [
-        "Navigate to the homepage of NOVA Store",
-        "Locate the product named 'Smart LED Desk Lamp'",
-        "Click the Add button on the 'Smart LED Desk Lamp' product card",
-        "Open the cart drawer by clicking the cart icon",
-        "Verify that the cart drawer is visible",
-        "Check that the cart contains the 'Smart LED Desk Lamp'",
-        "Verify the quantity of the 'Smart LED Desk Lamp' is 1",
-        "Verify the price of the 'Smart LED Desk Lamp' is $79.99"
+        "Open the NOVA Store homepage",
+        "Locate the Smart LED Desk Lamp product card",
+        "Click the Add button on the Smart LED Desk Lamp product card",
+        "Verify the cart badge displays 1",
+        "Open the cart drawer",
+        "Verify the Smart LED Desk Lamp is listed in the cart",
+        "Verify the quantity of the Smart LED Desk Lamp is 1",
+        "Verify the price of the Smart LED Desk Lamp is $79.99"
       ],
       "assertions": [
         "Cart badge should display 1",
         "Cart drawer should be visible",
-        "Cart should contain 'Smart LED Desk Lamp'",
+        "Cart should list Smart LED Desk Lamp",
         "Quantity should be 1",
         "Price should be $79.99"
       ],
-      "testData": null
+      "testData": {
+        "product": "Smart LED Desk Lamp"
+      }
     },
     {
       "id": "TC-002",
       "title": "Checkout with Store Pickup",
       "priority": "high",
       "steps": [
-        "Ensure the cart contains the 'Smart LED Desk Lamp'",
-        "Click the Checkout button in the cart drawer",
-        "Verify that the checkout page is displayed",
-        "Click the Choose Delivery button to proceed to Step 2",
-        "Verify that the delivery options are visible",
+        "Open the cart drawer",
+        "Click the Proceed to Checkout button",
+        "Verify the checkout page is displayed",
+        "Click the Choose Delivery button",
+        "Verify the delivery options are displayed",
         "Select the Store Pickup option",
-        "Verify that the Store Pickup option is highlighted",
-        "Select the store location 'Nova Palo Alto'",
-        "Verify that the schedule section is visible",
-        "Select the pickup date 'Fri'",
-        "Verify that the time selection section is visible",
-        "Select the pickup time '10:00 AM'",
+        "Verify the Store Pickup option is highlighted",
+        "Select the Nova Palo Alto store location",
+        "Verify the schedule section is visible",
+        "Select the pickup date as Friday",
+        "Verify the time section is visible",
+        "Select the pickup time as 10:00 AM",
         "Click the Continue to Payment button",
-        "Verify that the payment details section is visible",
-        "Enter the valid card number in the card number field",
-        "Enter the cardholder's name in the card name field",
-        "Enter the expiry date in the expiry field",
-        "Enter the CVV in the CVV field",
+        "Verify the payment step is displayed",
+        "Enter the valid card number",
+        "Enter the cardholder's name",
+        "Enter the card expiry date",
+        "Enter the card CVV",
         "Click the Review Order button",
-        "Verify that the review order section is visible",
+        "Verify the review step is displayed",
         "Click the Place Order button",
-        "Verify that the order confirmation page is displayed",
-        "Verify that the order confirmation message 'Order Confirmed!' is visible",
-        "Verify that the Continue Shopping button is visible",
-        "Click the Continue Shopping button"
+        "Verify the confirmation page is displayed",
+        "Verify the Order Confirmed! message is displayed",
+        "Verify the Continue Shopping button is visible"
       ],
       "assertions": [
         "Checkout page should be displayed",
         "Delivery options should be visible",
         "Store Pickup option should be highlighted",
         "Schedule section should be visible",
-        "Time selection section should be visible",
-        "Payment details section should be visible",
-        "Review order section should be visible",
-        "Order confirmation page should be displayed",
-        "Order confirmation message 'Order Confirmed!' should be visible",
+        "Time section should be visible",
+        "Payment step should be displayed",
+        "Review step should be displayed",
+        "Confirmation page should be displayed",
+        "Order Confirmed! message should be displayed",
         "Continue Shopping button should be visible"
       ],
       "testData": {
-        "stateSeeding": "cartWithOneItem"
+        "product": "Smart LED Desk Lamp",
+        "storeLocation": "Nova Palo Alto",
+        "pickupDetails": "Friday, 10:00 AM",
+        "payment": "validCard"
       }
     }
   ]

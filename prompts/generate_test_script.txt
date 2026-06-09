@@ -16,9 +16,11 @@ You are generating a Cypress spec file. Specs ONLY call Page Object methods — 
 
 {app_model}
 
-## TEST DATA
+## TEST DATA (ONLY use keys that exist here)
 
 {test_data_info}
+
+IMPORTANT: Only reference keys that exist in the fixture above. For example, use testData.appMessages.signup.success (if appMessages exists), testData.stateSeeding.existingUserForDuplicate (if stateSeeding exists). Do NOT invent fixture keys.
 
 ## Page Tracking
 

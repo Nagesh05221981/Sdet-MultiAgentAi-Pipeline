@@ -41,13 +41,43 @@ export async function runTestCodeGenerator(storySlug, testCases, domSnapshot, pa
   const capabilitiesPrompt = formatCapabilitiesForPrompt(capabilities);
   log('GENERATE', `Extracted capabilities from ${Object.keys(capabilities).length} POs`);
 
-  // Step 2: Read test data
+  // Step 2: Read test data and sync missing keys from app-model
   let testDataInfo = '';
   try {
-    const fixtureRaw = await fs.readFile(
-      path.resolve(PROJECT_ROOT, 'cypress/fixtures/test-data.json'), 'utf-8'
-    );
-    testDataInfo = `Available fixture data:\n${fixtureRaw}`;
+    const fixturePath = path.resolve(PROJECT_ROOT, 'cypress/fixtures/test-data.json');
+    const fixtureRaw = await fs.readFile(fixturePath, 'utf-8');
+    const fixture = JSON.parse(fixtureRaw);
+    const model = JSON.parse(appModel);
+
+    // Sync appMessages and stateSeeding from app-model into fixture if missing
+    let updated = false;
+    if (model.appMessages && !fixture.appMessages) {
+      fixture.appMessages = model.appMessages;
+      updated = true;
+      log('GENERATE', 'Synced appMessages from app-model into test-data.json');
+    }
+    if (model.stateSeeding && !fixture.stateSeeding) {
+      // Parse pre-serialized JSON strings in localStorage values into real objects
+      // so that JSON.stringify() in test code produces correct single-encoded values
+      const parsed = JSON.parse(JSON.stringify(model.stateSeeding));
+      for (const [key, seed] of Object.entries(parsed)) {
+        if (seed.localStorage) {
+          for (const [lsKey, lsVal] of Object.entries(seed.localStorage)) {
+            if (typeof lsVal === 'string') {
+              try { parsed[key].localStorage[lsKey] = JSON.parse(lsVal); } catch { /* keep as string */ }
+            }
+          }
+        }
+      }
+      fixture.stateSeeding = parsed;
+      updated = true;
+      log('GENERATE', 'Synced stateSeeding from app-model into test-data.json');
+    }
+    if (updated) {
+      await fs.writeFile(fixturePath, JSON.stringify(fixture, null, 2) + '\n', 'utf-8');
+    }
+
+    testDataInfo = `Available fixture data:\n${JSON.stringify(fixture, null, 2)}`;
   } catch { /* no fixture */ }
 
   // Step 3: Build prompt

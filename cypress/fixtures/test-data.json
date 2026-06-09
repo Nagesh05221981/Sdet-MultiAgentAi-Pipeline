@@ -54,5 +54,68 @@
     "validTerm": "headphones",
     "noResultsTerm": "xyznonexistent",
     "categoryFilter": "Tech"
+  },
+  "appMessages": {
+    "signup": {
+      "success": "✓ Account created! Signing you in…",
+      "emptyFields": "Please fill in all fields.",
+      "invalidEmail": "Invalid email address.",
+      "shortPassword": "Password must be at least 6 characters.",
+      "duplicateAccount": "Account already exists. Try logging in."
+    },
+    "login": {
+      "success": "✓ Signing you in…",
+      "emptyFields": "Please fill in all fields.",
+      "invalidCredentials": "Invalid email or password."
+    },
+    "confirmation": {
+      "heading": "Order Confirmed!",
+      "noOrder": "No Order Found"
+    }
+  },
+  "stateSeeding": {
+    "cartWithOneItem": {
+      "description": "Cart has 1x Wireless Noise-Cancelling Headphones ($149.99)",
+      "localStorage": {
+        "nova_cart": {
+          "1": 1
+        }
+      }
+    },
+    "cartWithTwoItems": {
+      "description": "Cart has Headphones + Desk Lamp",
+      "localStorage": {
+        "nova_cart": {
+          "1": 1,
+          "2": 1
+        }
+      }
+    },
+    "loggedInUser": {
+      "description": "User Jane Doe is logged in",
+      "localStorage": {
+        "nova_users": {
+          "jane@test.com": {
+            "name": "Jane Doe",
+            "password": "pass123"
+          }
+        },
+        "nova_current_user": {
+          "name": "Jane Doe",
+          "password": "pass123"
+        }
+      }
+    },
+    "existingUserForDuplicate": {
+      "description": "An account exists for john@test.com (for testing duplicate signup)",
+      "localStorage": {
+        "nova_users": {
+          "john@test.com": {
+            "name": "John Smith",
+            "password": "existing123"
+          }
+        }
+      }
+    }
   }
 }

@@ -16,10 +16,10 @@ describe('Cart Management', () => {
     homePage.verifyCartCount('1')
   })
 
-  it('TC-002: Open cart drawer and view cart items', () => {
+  it('TC-002: Open cart drawer and verify cart contents', () => {
     cy.visit('/index.html', {
       onBeforeLoad(win) {
-        win.localStorage.setItem('nova_cart', JSON.stringify({ "1": 1 }))
+        win.localStorage.setItem('nova_cart', JSON.stringify(testData.stateSeeding.cartWithOneItem.localStorage.nova_cart))
       }
     })
     homePage.openCart()
@@ -27,41 +27,42 @@ describe('Cart Management', () => {
     homePage.verifyProductInCart(testData.products.productToAdd.name)
   })
 
-  it('TC-003: Increase item quantity in the cart', () => {
+  it('TC-003: Increase product quantity in the cart', () => {
     cy.visit('/index.html', {
       onBeforeLoad(win) {
-        win.localStorage.setItem('nova_cart', JSON.stringify({ "1": 1 }))
+        win.localStorage.setItem('nova_cart', JSON.stringify(testData.stateSeeding.cartWithOneItem.localStorage.nova_cart))
       }
     })
     homePage.openCart()
     // Assuming there's a method to increase quantity, which is not listed in capabilities
     // homePage.increaseProductQuantity(testData.products.productToAdd.name)
     // homePage.verifyProductQuantity(testData.products.productToAdd.name, '2')
-    // homePage.verifyCartSubtotal('$299.98') // Assuming subtotal verification method
+    // homePage.verifyCartPriceInDrawer('Updated Price')
   })
 
-  it('TC-004: Decrease item quantity in the cart', () => {
+  it('TC-004: Decrease product quantity in the cart', () => {
     cy.visit('/index.html', {
       onBeforeLoad(win) {
-        win.localStorage.setItem('nova_cart', JSON.stringify({ "1": 1 }))
+        win.localStorage.setItem('nova_cart', JSON.stringify(testData.stateSeeding.cartWithOneItem.localStorage.nova_cart))
       }
     })
     homePage.openCart()
     // Assuming there's a method to decrease quantity, which is not listed in capabilities
     // homePage.decreaseProductQuantity(testData.products.productToAdd.name)
     // homePage.verifyProductQuantity(testData.products.productToAdd.name, '0')
-    // homePage.verifyCartSubtotal('$0.00') // Assuming subtotal verification method
+    // homePage.verifyProductNotInCart(testData.products.productToAdd.name)
   })
 
-  it('TC-005: Remove an item from the cart', () => {
+  it('TC-005: Remove a product from the cart', () => {
     cy.visit('/index.html', {
       onBeforeLoad(win) {
-        win.localStorage.setItem('nova_cart', JSON.stringify({ "1": 1 }))
+        win.localStorage.setItem('nova_cart', JSON.stringify(testData.stateSeeding.cartWithOneItem.localStorage.nova_cart))
       }
     })
     homePage.openCart()
     // Assuming there's a method to remove product, which is not listed in capabilities
     // homePage.removeProductFromCart(testData.products.productToAdd.name)
+    // homePage.verifyProductNotInCart(testData.products.productToAdd.name)
     homePage.verifyCartCount('0')
   })
 
@@ -70,14 +71,13 @@ describe('Cart Management', () => {
     homePage.openCart()
     // Assuming there's a method to verify empty cart message, which is not listed in capabilities
     // homePage.verifyEmptyCartMessage()
-    // Assuming there's a method to verify checkout button disabled, which is not listed in capabilities
     // homePage.verifyCheckoutButtonDisabled()
   })
 
   it('TC-007: Proceed to checkout with items in the cart', () => {
     cy.visit('/index.html', {
       onBeforeLoad(win) {
-        win.localStorage.setItem('nova_cart', JSON.stringify({ "1": 1 }))
+        win.localStorage.setItem('nova_cart', JSON.stringify(testData.stateSeeding.cartWithOneItem.localStorage.nova_cart))
       }
     })
     homePage.openCart()

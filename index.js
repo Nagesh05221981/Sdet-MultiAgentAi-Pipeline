@@ -2,7 +2,7 @@ import dotenv from 'dotenv';
 import fs from 'fs/promises';
 import path from 'path';
 import { PAGES } from './config/pages.config.js';
-import { PIPELINE } from './config/pipeline.config.js';
+import { PIPELINE, VALID_MODES } from './config/pipeline.config.js';
 import { generateAllPageObjects } from './agents/PageObjectGenerator.js';
 import { runTestCaseDesigner } from './agents/TestCaseDesigner.js';
 import { runTestCodeGenerator } from './agents/TestCodeGenerator.js';
@@ -16,18 +16,36 @@ dotenv.config();
 const PROJECT_ROOT = process.cwd();
 
 /**
+ * Resolve pipeline mode from CLI flags or environment variable.
+ * --mode=regression | --mode=development | PIPELINE_MODE env var
+ * Default: 'development'
+ */
+function resolveMode() {
+  const modeArg = process.argv.find((a) => a.startsWith('--mode='));
+  const mode = modeArg ? modeArg.split('=')[1] : (process.env.PIPELINE_MODE || PIPELINE.defaultMode);
+  if (!VALID_MODES.includes(mode)) {
+    logError('INIT', `Invalid mode "${mode}". Valid modes: ${VALID_MODES.join(', ')}`);
+    process.exit(1);
+  }
+  return mode;
+}
+
+/**
  * SDET Multi-Agent Pipeline Orchestrator
  *
- * Flow:
- * 1. Read all stories from stories/
- * 2. For each story: TestCaseDesigner → TestCodeGenerator (with validation)
- * 3. Run all specs in a single Cypress pass
- * 4. For failures: TestFixer → re-run (max 3 retries per spec)
- * 5. Print summary
+ * Modes:
+ *   development (default) — full pipeline: design → generate → run → fix
+ *   regression            — run existing specs + fix failures (skip generation)
  */
 
 async function main() {
+  const mode = resolveMode();
+  const ciMode = process.argv.includes('--ci');
+  // Extract story slug, ignoring --flags
+  const specificStory = process.argv.slice(2).find((a) => !a.startsWith('--'));
+
   log('INIT', '=== SDET Multi-Agent Pipeline ===');
+  log('INIT', `Mode: ${mode}${ciMode ? ' (CI)' : ''}`);
   log('INIT', `Model: ${process.env.OPENAI_MODEL || 'gpt-4o'}`);
   log('INIT', `LangSmith tracing: ${process.env.LANGCHAIN_TRACING_V2 || 'false'}`);
 
@@ -42,10 +60,14 @@ async function main() {
     process.exit(1);
   }
 
-  // ── Discover stories ──
+  // ── Regression mode: skip generation, run existing specs ──
+  if (mode === 'regression') {
+    return runRegression(specificStory, ciMode);
+  }
+
+  // ── Development mode: full pipeline ──
   const storiesDir = path.resolve(PROJECT_ROOT, PIPELINE.storiesDir);
   let storyFiles;
-  const specificStory = process.argv[2];
 
   if (specificStory) {
     storyFiles = [`${specificStory}.md`];
@@ -212,6 +234,135 @@ function detectPagesFromSpec(specPath) {
   if (lower.includes('checkout') || lower.includes('cart') || lower.includes('product')) pages.push('checkout');
   if (lower.includes('confirmation') || lower.includes('order')) pages.push('confirmation');
   return [...new Set(pages)];
+}
+
+/**
+ * Regression mode — run existing specs and self-heal failures.
+ * Skips stages 0 (PO gen), 1 (design), and 2 (codegen).
+ *
+ * Exit codes (CI mode):
+ *   0 — all tests passed on first run
+ *   1 — tests failed, fixer could not heal
+ *   2 — tests failed, fixer healed them (needs human review)
+ */
+async function runRegression(specificStory, ciMode = false) {
+  const specPattern = specificStory
+    ? `cypress/e2e/${specificStory}.cy.js`
+    : 'cypress/e2e/**/*.cy.js';
+
+  log('REGRESSION', `Running existing specs: ${specPattern}`);
+
+  // ── Stage 3: Run specs ──
+  const runResult = await runCypressSpecs(specPattern);
+
+  // Build results from discovered specs
+  const results = [];
+  if (runResult.passed) {
+    results.push({ story: specificStory || 'all-specs', status: 'generated', error: null });
+    log('REGRESSION', 'All tests PASSED!');
+    printSummary(results, runResult);
+    if (ciMode) await writeCiResults(results, false);
+    return; // exit 0 — all green
+  }
+
+  // ── Stage 4: Fix failures ──
+  const uniqueFailures = [];
+  const seenSpecs = new Set();
+  for (const failure of runResult.failures) {
+    if (!seenSpecs.has(failure.spec)) {
+      seenSpecs.add(failure.spec);
+      const allErrors = runResult.failures
+        .filter((f) => f.spec === failure.spec)
+        .map((f) => `[${f.failingTest || 'unknown'}] ${f.errorMessage}`)
+        .join('\n\n');
+      uniqueFailures.push({ ...failure, errorMessage: allErrors });
+    }
+  }
+
+  // Populate results for each failing spec
+  for (const f of uniqueFailures) {
+    const slug = f.spec.replace('cypress/e2e/', '').replace('.cy.js', '');
+    results.push({ story: slug, status: 'fix_failed', error: f.errorMessage });
+  }
+
+  log('FIX', `=== ${uniqueFailures.length} failing spec(s) — starting self-heal ===`);
+
+  for (const failure of uniqueFailures) {
+    let fixed = false;
+    const pageIds = detectPagesFromSpec(failure.spec);
+
+    for (let attempt = 1; attempt <= PIPELINE.maxFixRetries; attempt++) {
+      const fixResult = await runTestFixer(failure, '', pageIds, attempt);
+
+      if (!fixResult) {
+        log('FIX', `Attempt ${attempt} produced no fix for ${failure.spec}`);
+        continue;
+      }
+
+      log('FIX', `Re-running fixed spec: ${failure.spec}`);
+      const rerun = await runCypressSpecs(failure.spec);
+
+      if (rerun.passed) {
+        log('FIX', `FIXED on attempt ${attempt}: ${failure.spec}`);
+        fixed = true;
+        break;
+      }
+
+      if (rerun.failures.length > 0) {
+        failure.errorMessage = rerun.failures[0].errorMessage;
+        failure.failureType = rerun.failures[0].failureType;
+      }
+    }
+
+    const slug = failure.spec.replace('cypress/e2e/', '').replace('.cy.js', '');
+    const entry = results.find((r) => r.story === slug);
+    if (entry) {
+      entry.status = fixed ? 'fixed' : 'fix_failed';
+    }
+  }
+
+  printSummary(results, runResult);
+
+  // ── CI: write results and exit with appropriate code ──
+  if (ciMode) {
+    const specsFixed = results.filter((r) => r.status === 'fixed').map((r) => r.story);
+    const specsUnfixed = results.filter((r) => r.status === 'fix_failed').map((r) => r.story);
+    const fixesApplied = specsFixed.length > 0;
+
+    await writeCiResults(results, fixesApplied);
+
+    if (specsUnfixed.length > 0) {
+      log('CI', `Exiting with code 1 — ${specsUnfixed.length} spec(s) still failing`);
+      process.exit(1);
+    }
+    if (fixesApplied) {
+      log('CI', `Exiting with code 2 — ${specsFixed.length} spec(s) healed, needs human review`);
+      process.exit(2);
+    }
+  }
+}
+
+/**
+ * Write CI results JSON for downstream scripts (ci-report.sh).
+ */
+async function writeCiResults(results, fixesApplied) {
+  const specsFixed = results.filter((r) => r.status === 'fixed');
+  const specsUnfixed = results.filter((r) => r.status === 'fix_failed');
+  const specsPassed = results.filter((r) => r.status === 'generated');
+
+  const ciResults = {
+    timestamp: new Date().toISOString(),
+    testsRan: results.length,
+    testsPassed: specsPassed.length + specsFixed.length,
+    testsFailed: specsUnfixed.length,
+    fixesApplied,
+    specsFixed: specsFixed.map((r) => ({ spec: r.story, error: r.error })),
+    specsUnfixed: specsUnfixed.map((r) => ({ spec: r.story, error: r.error })),
+  };
+
+  const outPath = path.resolve(PROJECT_ROOT, PIPELINE.ciResultsFile);
+  await fs.writeFile(outPath, JSON.stringify(ciResults, null, 2) + '\n', 'utf-8');
+  log('CI', `Wrote results to ${PIPELINE.ciResultsFile}`);
 }
 
 /**

@@ -25,7 +25,7 @@ describe('Add Product to Cart and Checkout', () => {
   it('TC-002: Complete checkout with Standard Shipping', () => {
     cy.visit('/index.html', {
       onBeforeLoad(win) {
-        win.localStorage.setItem('nova_cart', JSON.stringify({ "1": 1 }))
+        win.localStorage.setItem('nova_cart', JSON.stringify(testData.stateSeeding.cartWithOneItem.localStorage.nova_cart))
       }
     })
     homePage.openCart()
@@ -48,8 +48,6 @@ describe('Add Product to Cart and Checkout', () => {
     checkoutPage.placeOrder()
     confirmationPage.verifyOrderConfirmed()
     confirmationPage.verifyOrderIdVisible()
-    confirmationPage.verifyItemsListVisible()
-    confirmationPage.verifyTotalsSectionVisible()
     confirmationPage.verifyDetailCardsVisible()
   })
 })

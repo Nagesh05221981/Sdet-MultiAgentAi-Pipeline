@@ -8,17 +8,20 @@
       "priority": "high",
       "steps": [
         "Click the Sign Up button in the navigation bar",
+        "Verify the auth modal is visible with the Sign Up tab active",
         "Enter the new user's name in the Full Name field",
         "Enter the new user's email in the Email field",
         "Enter the new user's password in the Password field",
         "Click the Create Account button"
       ],
       "assertions": [
-        "The success message '✓ Account created! Signing you in…' should be displayed",
-        "The user chip should display the new user's first name",
-        "The Login/Sign Up buttons should not be visible"
+        "Verify the success message '✓ Account created! Signing you in…' is displayed",
+        "Verify the user chip is visible with the new user's first name",
+        "Verify the Login/Sign Up buttons are not visible"
       ],
-      "testData": null
+      "testData": {
+        "users": "newUser"
+      }
     },
     {
       "id": "TC-002",
@@ -26,15 +29,18 @@
       "priority": "medium",
       "steps": [
         "Click the Sign Up button in the navigation bar",
+        "Verify the auth modal is visible with the Sign Up tab active",
         "Leave the Full Name field empty",
         "Enter the new user's email in the Email field",
         "Enter the new user's password in the Password field",
         "Click the Create Account button"
       ],
       "assertions": [
-        "The error message 'Please fill in all fields.' should be displayed"
+        "Verify the error message 'Please fill in all fields.' is displayed"
       ],
-      "testData": null
+      "testData": {
+        "users": "newUser"
+      }
     },
     {
       "id": "TC-003",
@@ -42,13 +48,14 @@
       "priority": "medium",
       "steps": [
         "Click the Sign Up button in the navigation bar",
+        "Verify the auth modal is visible with the Sign Up tab active",
         "Enter the invalid email user's name in the Full Name field",
-        "Enter the invalid email user's email in the Email field",
+        "Enter the invalid email in the Email field",
         "Enter the invalid email user's password in the Password field",
         "Click the Create Account button"
       ],
       "assertions": [
-        "The error message 'Invalid email address.' should be displayed"
+        "Verify the error message 'Invalid email address.' is displayed"
       ],
       "testData": {
         "users": "invalidEmail"
@@ -60,13 +67,14 @@
       "priority": "medium",
       "steps": [
         "Click the Sign Up button in the navigation bar",
+        "Verify the auth modal is visible with the Sign Up tab active",
         "Enter the short password user's name in the Full Name field",
         "Enter the short password user's email in the Email field",
-        "Enter the short password user's password in the Password field",
+        "Enter the short password in the Password field",
         "Click the Create Account button"
       ],
       "assertions": [
-        "The error message 'Password must be at least 6 characters.' should be displayed"
+        "Verify the error message 'Password must be at least 6 characters.' is displayed"
       ],
       "testData": {
         "users": "shortPassword"
@@ -78,15 +86,17 @@
       "priority": "medium",
       "steps": [
         "Click the Sign Up button in the navigation bar",
+        "Verify the auth modal is visible with the Sign Up tab active",
         "Enter the existing user's name in the Full Name field",
         "Enter the existing user's email in the Email field",
         "Enter the existing user's password in the Password field",
         "Click the Create Account button"
       ],
       "assertions": [
-        "The error message 'Account already exists. Try logging in.' should be displayed"
+        "Verify the error message 'Account already exists. Try logging in.' is displayed"
       ],
       "testData": {
+        "users": "existingUser",
         "stateSeeding": "existingUserForDuplicate"
       }
     }

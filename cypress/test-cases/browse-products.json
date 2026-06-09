@@ -10,7 +10,7 @@
         "Open the NOVA Store homepage"
       ],
       "assertions": [
-        "All 18 products should be displayed in a grid layout"
+        "The product grid should display 18 products"
       ],
       "testData": null
     },
@@ -24,11 +24,9 @@
       ],
       "assertions": [
         "Only products matching 'headphones' should be visible",
-        "The results count should update to reflect the number of matching products"
+        "The results count should display '1 product'"
       ],
-      "testData": {
-        "searchTerm": "headphones"
-      }
+      "testData": null
     },
     {
       "id": "TC-003",
@@ -41,9 +39,7 @@
       "assertions": [
         "A 'no results' message should appear"
       ],
-      "testData": {
-        "searchTerm": "xyznonexistent"
-      }
+      "testData": null
     },
     {
       "id": "TC-004",
@@ -55,11 +51,9 @@
       ],
       "assertions": [
         "Only products in the 'Tech' category should be visible",
-        "The 'Tech' category chip should be visually highlighted"
+        "The 'Tech' filter chip should be highlighted"
       ],
-      "testData": {
-        "category": "Tech"
-      }
+      "testData": null
     },
     {
       "id": "TC-005",
@@ -67,7 +61,8 @@
       "priority": "medium",
       "steps": [
         "Open the NOVA Store homepage",
-        "Click the 'All' category filter chip"
+        "Click the 'Tech' category filter chip",
+        "Click the 'All' filter chip"
       ],
       "assertions": [
         "All 18 products should be visible again"
@@ -84,13 +79,10 @@
         "Enter the search term 'headphones' in the search bar"
       ],
       "assertions": [
-        "Only products in the 'Tech' category matching 'headphones' should be visible",
-        "The results count should update to reflect the number of matching products"
+        "Only 'Wireless Noise-Cancelling Headphones' should be visible",
+        "The results count should display '1 product'"
       ],
-      "testData": {
-        "category": "Tech",
-        "searchTerm": "headphones"
-      }
+      "testData": null
     }
   ]
 }

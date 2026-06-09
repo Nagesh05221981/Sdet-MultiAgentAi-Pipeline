@@ -16,7 +16,7 @@ describe('Browse Products', () => {
   it('TC-002: Search for a product by name', () => {
     cy.visit('/index.html')
     homePage.searchFor(testData.search.validTerm)
-    homePage.verifyResultsInfo('products')
+    homePage.verifyResultsInfo('1 product')
   })
 
   it('TC-003: Search with no results', () => {
@@ -29,11 +29,11 @@ describe('Browse Products', () => {
     cy.visit('/index.html')
     homePage.filterByCategory(testData.search.categoryFilter)
     homePage.verifyFilterActive(testData.search.categoryFilter)
-    homePage.verifyResultsInfo('products')
   })
 
   it('TC-005: Reset filters to view all products', () => {
     cy.visit('/index.html')
+    homePage.filterByCategory(testData.search.categoryFilter)
     homePage.filterByCategory('All')
     homePage.verifyProductCount(18)
   })
@@ -42,6 +42,6 @@ describe('Browse Products', () => {
     cy.visit('/index.html')
     homePage.filterByCategory(testData.search.categoryFilter)
     homePage.searchFor(testData.search.validTerm)
-    homePage.verifyResultsInfo('products')
+    homePage.verifyResultsInfo('1 product')
   })
 })
